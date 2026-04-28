@@ -1,0 +1,36 @@
+# axon 工具写权限白名单
+# 用途：声明每个工具能改哪些路径，作为权限审计依据
+# 实际执行权限由 .claude/settings.local.json 控制，此文件是文档化登记
+
+tools:
+  bridge-feishu:
+    description: 飞书 ↔ Claude Code 双向桥
+    can_write:
+      - axon/bridge-feishu/workdir/scratch/**
+      - axon/bridge-feishu/workdir/inbox/**
+      - brain/workspace/**
+      - brain/inbox/*.im.md
+    can_read:
+      - brain/gateway.md
+      - brain/cortex/*/_context.md
+      - brain/timeline/**
+    cannot:
+      - brain/cortex/*/_context.md  # 只读不写
+      - brain/cortex/methodology.md
+      - brain/gateway.md
+      - vault/**
+      - .env
+      - ~/.ssh/**
+      - ~/.lark-cli/**
+
+  curator-example:
+    description: 示例 curator 工具：从 vault 蒸馏摘要进 thalamus
+    can_write:
+      - thalamus/<source>/digests/**
+    can_read:
+      - vault/<source>/**
+    cannot:
+      - brain/**
+      - vault/<other-source>/**
+
+# 添加你的工具时，复制上面的结构填充

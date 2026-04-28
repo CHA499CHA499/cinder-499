@@ -1,0 +1,30 @@
+# 私人内容（绝不公开）
+brain/self/
+brain/timeline/
+brain/inbox/
+brain/workspace/
+brain/archive/
+brain/insights/
+vault/
+
+# 凭证
+.env
+.env.*
+!.env.example
+**/settings.local.json
+!**/settings.local.json.example
+.openclaw/
+.lark-cli/
+
+# 系统
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
+.venv/
+venv/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp

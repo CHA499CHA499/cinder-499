@@ -1,0 +1,98 @@
+#!/bin/bash
+# instinct-counter.sh — A1 自动评分驱动器
+# PostToolUse hook: 每 N 次 tool call 触发一次提炼记忆 sub-agent
+# 接力 axon/curator-insights：sub-agent 写完 consolidate 后立即评分归档
+#
+# 复制本文件到 axon/hooks/instinct-counter.sh 并 chmod +x
+# 在 ~/.claude/settings.local.json 的 hooks.PostToolUse 注册：
+#   {"matcher": "*", "hooks": [{"type": "command", "command": "<absolute-path-to>/axon/hooks/instinct-counter.sh"}]}
+#
+# 可迁移性：禁止硬编码绝对路径。CINDER_HOME 解析顺序：env > ~/.cinder/config > 脚本位置推导
+
+# ============================================================
+# 1. 解析 CINDER_HOME
+# ============================================================
+if [ -n "$CINDER_HOME" ]; then
+  : # use env
+elif [ -f "$HOME/.cinder/config" ] && grep -q '^CINDER_HOME=' "$HOME/.cinder/config" 2>/dev/null; then
+  CINDER_HOME=$(grep '^CINDER_HOME=' "$HOME/.cinder/config" | head -n1 | cut -d= -f2 | tr -d '"' | tr -d "'")
+else
+  # 从脚本位置推导：axon/hooks/instinct-counter.sh → 上两级 = REPO_ROOT
+  CINDER_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+fi
+
+COUNTER_FILE="$HOME/.cinder/instinct-counter"
+LOCK_FILE="$HOME/.cinder/instinct-lock"
+BRAIN_DIR="$CINDER_HOME/brain"
+CURATOR_DIR="$CINDER_HOME/axon/curator-insights"
+THRESHOLD=15  # 每 15 次 tool call 触发一次
+
+# ============================================================
+# 2. 计数 + 阈值判断
+# ============================================================
+mkdir -p "$(dirname "$COUNTER_FILE")"
+
+count=$(cat "$COUNTER_FILE" 2>/dev/null || echo 0)
+count=$((count + 1))
+echo $count > "$COUNTER_FILE"
+
+if [ $((count % THRESHOLD)) -ne 0 ]; then
+  exit 0
+fi
+
+# ============================================================
+# 3. 防并发
+# ============================================================
+if [ -f "$LOCK_FILE" ]; then
+  exit 0
+fi
+touch "$LOCK_FILE"
+
+# ============================================================
+# 4. 后台异步触发提炼 + A1 评分接力
+# ============================================================
+(
+  # 记录提炼前的 consolidate 文件清单，用于 diff 出新增的
+  BEFORE=$(mktemp)
+  ls "$BRAIN_DIR/insights/" 2>/dev/null | grep -E '^consolidate-.*\.md$' | sort > "$BEFORE"
+
+  claude --print "你是 brain-curator sub-agent，专责知识提炼。
+
+任务：
+1. 读取 $BRAIN_DIR/timeline/ 下最近一个周报文件（如有）
+2. 读取 $BRAIN_DIR/cortex/ 下有改动的 _context.md（按修改时间排序，取最近 3 个）
+3. 从中提炼 3-5 条可复用模式、教训或方法论候选
+4. 写入 $BRAIN_DIR/insights/consolidate-\$(date +%Y-%m-%d-%H%M).md
+
+输出文件 frontmatter 必须含：
+- title、type: insight、status: draft
+- sources: 列出读取的文件路径
+- created: 今日日期
+
+写完后这份文件会被 axon/curator-insights/score_consolidate.py 自动评分。
+如果想拿 ≥ 7 分自动 promote：
+  - 至少 2 周内有复现的实证（不是单事件深度复盘）
+  - 写出反模式 vs 正模式对照
+  - 给出可执行的检查表/脚本/Hook 草案
+
+严格约束（违反即停止）：
+- 禁止修改 $BRAIN_DIR/cortex/methodology.md
+- 禁止写入 brain/ 以外的任何位置
+- 禁止读取 vault/ 目录
+- 输出必须是 draft 状态，scored_* 字段不要自填" 2>/dev/null
+
+  # A1 接力：找出本次新生成的 consolidate（diff before/after）逐个评分
+  AFTER=$(mktemp)
+  ls "$BRAIN_DIR/insights/" 2>/dev/null | grep -E '^consolidate-.*\.md$' | sort > "$AFTER"
+  comm -13 "$BEFORE" "$AFTER" | while read -r newfile; do
+    [ -z "$newfile" ] && continue
+    [ ! -d "$CURATOR_DIR" ] && break  # A1 没装就跳过
+    uv run --directory "$CURATOR_DIR" score_consolidate.py \
+      "$BRAIN_DIR/insights/$newfile" >> "$HOME/.cinder/curator-insights.log" 2>&1 || true
+  done
+  rm -f "$BEFORE" "$AFTER"
+
+  rm -f "$LOCK_FILE"
+) &
+
+exit 0

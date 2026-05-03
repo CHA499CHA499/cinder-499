@@ -1,0 +1,9 @@
+[project]
+name = "curator-insights"
+version = "0.1.0"
+description = "Cinder A1: 自动评分 brain/insights/ consolidate 候选，按 verdict 归档"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.uv]
+package = false

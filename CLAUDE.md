@@ -1,6 +1,7 @@
 # Cinder 项目指令
 
 > 本文件是 AI 协作行为规范。把它放在仓库根目录，Claude Code 会自动加载。
+> 详细规则见 `brain/cortex/<模块>/SKILL.md`，本文件只保留入口和触发口令表。
 
 ## 远程触发安全护栏（Prompt Injection 防御）
 
@@ -21,121 +22,47 @@
 
 ---
 
-## 四层认知架构
+## 文档红线 · AI 是代码维护的责任主体
 
-仓库按 **vault / thalamus / brain / axon** 四层组织。完整规范：`docs/01-architecture.md`。
+> 当 AI 全权或主导编写一份代码时，**用户多半看不懂代码细节**。一份没文档的功能等于不存在——下次 AI 接手会丢失上下文。
 
-| 层 | 定位 |
+**强约束**（违反等于背叛承诺，commit message 必须注明 `[SPEC-WAIVER: 未更新 <文件> 原因]`）：
+
+1. **新增 / 改 / 删 axon 工具** → 必须同步更新该工具自己的：
+   - `README.md`（用法）
+   - `CHANGELOG.md`（变更日志）
+   - `INTERFACE.md`（对外契约：被谁调用、读写哪些路径、依赖什么环境）
+   - `ROLLBACK.md`（如果出问题怎么回退到上一可用状态）
+2. **改架构层**（vault / thalamus / brain / axon 之间数据流向）→ 必须同步 `brain/cortex/memory-system/docs/architecture-spec.md` + 仓根 `ARCHITECTURE.md`（如有）
+3. **新增触发口令 / SKILL.md** → 必须同步本文件下方"触发口令"表 + 该 SKILL.md 的 frontmatter `exposure` 字段
+4. **写代码不写文档**（哪怕只是改了一个路径解析）= 违反红线
+
+**如何判断该不该写**：问自己一句"明天换一个 AI 会话来接手，没有今天对话上下文，光读代码能搞清楚吗？"——不能 = 必须写。
+
+---
+
+@brain/gateway-stable.md
+@brain/gateway.md
+
+---
+
+## 触发口令 → 加载对应 SKILL.md
+
+| 用户/上下文出现 | 加载 |
 |---|---|
-| `vault/` | 完整无损档案，WORM（write once, read many） |
-| `thalamus/` | 半加工摘要 + 索引 |
-| `brain/` | 认知层（gateway / cortex / concepts / views / self / timeline / workspace / archive / insights / evals） |
-| `axon/` | 执行层（bridge-* / curator-* / keeper-* / mcp-*） |
+| 记忆 / 架构 / Dream / brain/ / gateway / 更新记忆 / 提炼记忆 / 收工 / 再见 | `brain/cortex/memory-system/SKILL.md`（**默认 always 加载**）|
+| （在这里追加你的模块和触发词）| |
 
-**数据流向单向**：vault → thalamus → brain → axon → 外部世界。禁止反向。
-
-### AI 行为强约束
-
-- **追溯链**：任何结论性陈述应有 `sources` 字段或 `[[wiki-link]]` 引用
-- **vault 访问**：禁止探索式读取；只在 ① brain 有 provenance 指针 ② `axon/_permissions.yaml` 登记 ③ 用户当前会话同意 三种情形访问
-- **methodology 防污染**：`brain/cortex/methodology.md` 禁止直接编辑，必须从 `brain/insights/` 经审核批量更新
-- **gateway 容量**：活跃任务 ≤ 5 chunk × ≤ 5 个（对应工作记忆上限）
-- **append-only 绝对**：vault 文件写入后不可改；brain 旧版本走 `supersedes` 链而非删除
+详细机制：`docs/05-skill-protocol.md`。
 
 ---
 
-## 对话归档
+## 高频触发协议
 
-当用户说"再见"/"收工"/"结束"等结束意图时，将本次对话的关键上下文写入 `brain/inbox/{YYYY-MM-DD}.md`：
-- 做了哪些决策（选了什么方案、为什么、否定了哪些备选）
-- 遇到了什么问题、怎么解决的
-- 未完成的事项
-- 用户给出的重要指示或偏好
-
-同一天多次对话追加到同一个文件，用 `## HH:MM` 分隔。
-
----
-
-## Gateway 增量更新
-
-当会话中发生以下事件时，立即在 `brain/gateway.md` 的 `## 未合并更新` 段末尾追加一行：
-- 任务状态翻转（进行中→已完成、新增任务、任务阻塞）
-- 重要决策落定（选定方案、否决方案、方向变更）
-- 新增阻塞项或阻塞解除
-
-格式：`- MM-DD HH:MM: 简述（≤30字）`
-
-不需要追加的：日常文件编辑、讨论过程中的临时结论、未确定的方案。
-
----
-
-## 任务闭环规则（严格执行）
-
-1. **完成即更新**：当一个任务的代码已提交或功能已确认完成时，必须在同一会话内立即更新：
-   - `brain/workspace/` 任务文件（标记为已完成）
-   - `brain/gateway.md` 活跃任务列表（移入已完成或追加未合并更新）
-   - 对应 `brain/cortex/<模块>/_context.md`（更新状态字段）
-
-   禁止"代码做完了但记录没更新"的情况出现。
-
-2. **会话开始时校验**：每次新会话涉及任务进度查询时，不能只读 gateway 就报告，必须抽查至少一项活跃任务的实际状态（git log / 代码文件）与记录是否一致。发现不一致立即修正。
-
-3. **workspace 过期清理**：已完成超过 7 天的 workspace 任务文件应归档到 `brain/archive/`。
-
----
-
-## 指令协议
-
-### "更新记忆"
-
-当用户输入"更新记忆"时：
-
-1. 回顾当前对话上下文，提取：今天做了什么 / 遇到了什么问题如何解决 / 涉及哪些模块 / 有无重要决策或方向变更
-2. 写入 `brain/timeline/<YYYY-MM>/W<数>.md`（周报，按日追加）
-3. 更新对话涉及模块的 `brain/cortex/<模块>/_context.md`
-4. 更新 `brain/workspace/`（新增、完成、切换）
-5. 输出确认：列出写入了哪些文件
-
-### "提炼记忆"
-
-当用户输入"提炼记忆"时：
-
-1. 全面阅读：`brain/timeline/` 所有周报 + `brain/cortex/` 所有 `_context.md` + `brain/workspace/` 所有文件
-2. 提炼三类知识：
-   - **方法论 (Methodology)**：反复出现的工作模式和有效方法
-   - **可复用模式 (Reusable Patterns)**：可在其他模块中复用的设计模式
-   - **教训与避坑 (Lessons Learned)**：犯过的错误和避坑指南
-3. 写入 `brain/insights/consolidate-<date>.md`（**不直接写入 methodology.md**）
-4. 输出本次提炼的核心发现
-
----
-
-## 文件存放规则（按四层）
-
-### vault/ 层（档案）
-- 原始音频 / 视频 / PDF → `vault/<source>/<YYYY-MM-DD>/<HH-MM-SS>_<slug>.<ext>`
-- 系统迁移快照 → `vault/_system/migrations/<YYYY-MM-DD>_<slug>/`
-
-### thalamus/ 层（感知）
-- 源 _context + schema + digests → `thalamus/<source>/{_context.md, schema.yaml, digests/}`
-
-### brain/ 层（认知）
-- 工作记忆 → `brain/gateway.md`（≤ 5 chunk × ≤ 5 个）
-- 模块文档 → `brain/cortex/<模块>/{docs,design,code}/`
-- 原子概念笔记 → `brain/concepts/<kebab-case>.md`（200-600 字）
-- 视图索引 → `brain/views/<slug>.md`（纯索引，不含内容本体）
-- 用户画像 / feedback / reference → `brain/self/`（**保留本地，不入公开仓**）
-- 周报 → `brain/timeline/<YYYY-MM>/W<数>.md`
-- 活跃任务 → `brain/workspace/<YYYY-MM-DD>-<模块>-<slug>.md`
-- 归档 → `brain/archive/`
-- 方法论沉淀 → `brain/cortex/methodology.md`（禁直接编辑，从 insights/ 经审核批量更新）
-- 提炼候选 → `brain/insights/consolidate-<date>.md`
-- Benchmark → `brain/evals/<category>/<YYYY-MM-DD>-<slug>.yaml`
-
-### axon/ 层（执行）
-- 工具按前缀分类 → `axon/{bridge-,curator-,keeper-,mcp-}<name>/`
-- 写权限白名单 → `axon/_permissions.yaml`
-- Hook 脚本 → `axon/hooks/<name>.sh`
+- **用户说"再见"/"收工"/"结束"** → 写本次对话关键上下文到 `brain/inbox/{YYYY-MM-DD}.md`（决策/问题/未完事项/用户偏好），同一天追加用 `## HH:MM` 分隔。详细流程见 memory-system SKILL.md。
+- **用户说"更新记忆"/"提炼记忆"** → 见 memory-system SKILL.md 对应章节。
+- **gateway 增量事件**（任务翻转/重要决策/阻塞变化）→ 追加到 `brain/gateway-delta.md`（不写 gateway.md）。格式：`- MM-DD HH:MM: 简述（≤30字）`
+- **任务闭环**：代码完成或功能确认后，**同会话内**立即更新 workspace 任务文件 + gateway 活跃任务 + 对应 cortex `_context.md`。禁止"代码完了但记录没更新"。
 
 ---
 

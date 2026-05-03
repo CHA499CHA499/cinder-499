@@ -24,6 +24,9 @@ A1 做的事：
 ```bash
 # 在 cinder-499 仓根执行
 ./scripts/install-curator-insights.sh
+
+# 顺手复制 hook 模板（仍需手动注册到 Claude Code hooks）
+./scripts/install-curator-insights.sh --with-hook
 ```
 
 脚本会做：
@@ -31,9 +34,20 @@ A1 做的事：
 1. 检查 `uv` 是否安装（没装则给出 `curl` 安装命令，不自动跑）
 2. 检查 `claude` CLI 是否在 PATH（A1 用 `claude --print` 调 Haiku）
 3. 把 `templates/curator-insights/` 复制到 `axon/curator-insights/`
-4. `cd axon/curator-insights && uv sync`
-5. 跑一次 `--dry-run`（如果 `brain/insights/` 里有 consolidate 文件）
-6. 提示用户在 `axon/hooks/instinct-counter.sh` 末尾接入评分调用（参考 `skeleton/axon/hooks/instinct-counter.sh.example`）
+4. 建好 `brain/insights/{promoted,hold,discarded}/`
+5. `cd axon/curator-insights && uv sync`
+6. 跑一次 `--dry-run`（如果 `brain/insights/` 里有 consolidate 文件）
+7. `--with-hook` 模式会复制 `axon/hooks/instinct-counter.sh`
+
+## 从零装机（一条命令）
+
+刚 clone 给朋友试用时，推荐直接跑统一 bootstrap：
+
+```bash
+./scripts/bootstrap-cinder.sh
+```
+
+它会展开 `skeleton/`、生成 `.env`、初始化 gateway 三件套、写 `~/.cinder/config`，并调用 A1 安装脚本。跑完只需要编辑 `.env` 里的 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` / `DEFAULT_MODEL`，之后用 `./scripts/cinder-claude.sh` 启动。
 
 ## 让 Claude Code 帮你装
 
@@ -70,7 +84,7 @@ uv run --directory axon/curator-insights \
 
 ## 接入 PostToolUse hook（自动驱动）
 
-A1 配套的"自动驱动器"是 `axon/hooks/instinct-counter.sh`：每 N 次 tool-call 触发 brain-curator sub-agent 跑提炼，写完立即调 A1 评分。
+A1 配套的"自动驱动器"是 `axon/hooks/instinct-counter.sh`：每 N 次 tool-call 触发 brain-curator sub-agent 跑提炼，写完立即调 A1 评分。hook 会自动加载仓根 `.env`，所以三方 API 和 `CINDER_A1_SCORE_MODEL` 不需要重复配置。
 
 模板见 `skeleton/axon/hooks/instinct-counter.sh.example`。接入步骤：
 
@@ -92,7 +106,8 @@ A1 配套的"自动驱动器"是 `axon/hooks/instinct-counter.sh`：每 N 次 to
 
 ## 限制 / 已知问题
 
-- **依赖 `claude` CLI**：用 `claude --print` 跑评分（不用 ANTHROPIC_API_KEY）。三方 API 用户也能跑，因为 CLI 自己读 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN`
+- **依赖 `claude` CLI**：用 `claude --print` 跑评分。A1 会自动读取仓根 `.env`，三方 API 用户填好 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` 即可
+- **模型名可覆盖**：默认评分模型是 Haiku；供应商不支持时设置 `CINDER_A1_SCORE_MODEL`
 - **Haiku 偶发输出非 JSON**：脚本有正则兜底
 - **冷静评分偏严**：高质量稿子也常拿 5 分进 hold，第一次跑批量 promote 比例 5-30% 是正常的
 - **不评分早期人工 insights**：只处理 `consolidate-*.md` 文件名

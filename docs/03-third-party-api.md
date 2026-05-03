@@ -28,6 +28,18 @@ claude --print "say hi" --model claude-sonnet-4-6
 
 能正常返回就 OK。
 
+如果你使用仓根 `.env`，推荐用 Cinder 启动脚本，它会自动加载 `.env`：
+
+```bash
+./scripts/cinder-claude.sh
+```
+
+它也会把 `.env` 里的 `DEFAULT_MODEL` 自动传给 `claude --model`。临时覆盖模型：
+
+```bash
+./scripts/cinder-claude.sh --model claude-sonnet-4-6
+```
+
 ## 二、飞书 bot 端额外改动
 
 bot subprocess 默认继承父进程环境（`os.environ.copy()`），所以**只要 launchd plist / systemd 里 export 了上面两个变量，subprocess 自动带上**。

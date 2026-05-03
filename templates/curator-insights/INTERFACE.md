@@ -18,7 +18,9 @@
 | 路径 | 用途 | 写入？ |
 |---|---|---|
 | `brain/insights/consolidate-*.md` | 评分目标（含 frontmatter + 正文） | ❌ 只读 |
+| `.env` | 读取 Claude Code / 三方 API / A1 模型配置 | ❌ |
 | `$CINDER_HOME` env | 仓根定位（第 1 层 fallback） | ❌ |
+| `$CINDER_A1_SCORE_MODEL` env | 覆盖评分模型（可选） | ❌ |
 | `~/.cinder/config` | 仓根定位（第 2 层 fallback，`CINDER_HOME=` 行） | ❌ |
 | 脚本自身位置 | 仓根定位（第 3 层 fallback：`<script>/../..`） | ❌ |
 

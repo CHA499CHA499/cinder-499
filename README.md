@@ -25,25 +25,50 @@
 
 ## 5 分钟跑通
 
+推荐给朋友的最短路径：
+
 ```bash
 git clone https://github.com/CHA499CHA499/cinder-499.git my-cinder
 cd my-cinder
-cp -r skeleton/* .            # 把骨架展开到根目录
-cp skeleton/.env.example .env # 复制环境变量模板
-rm -rf skeleton                # 移除模板目录（也可保留作为 reference）
+./scripts/bootstrap-cinder.sh  # 展开骨架 + 生成 .env + 初始化 gateway + 安装 A1
 ```
 
-然后：
+然后只做三件事：
 
-1. 配 Claude Code CLI（三方 API）→ `docs/03-third-party-api.md`
-2. 编辑 `.env` 填入你的 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN`
-3. 把 `gateway-stable.md.template` / `gateway.md.template` / `gateway-delta.md.template` 复制为去掉 `.template` 后缀的版本，按提示填空
-4. 在仓根开 Claude Code 会话开始用
+1. 编辑 `.env`，填 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` / `DEFAULT_MODEL`
+2. 编辑 `brain/gateway-stable.md`，填你的北极星和项目概况
+3. 在仓根运行启动脚本，进会话后说：
+
+```bash
+./scripts/cinder-claude.sh
+```
+
+这个脚本会自动加载 `.env`，并把 `DEFAULT_MODEL` 传给 `claude --model`。如果临时要换模型，可以显式传参覆盖：
+
+```bash
+./scripts/cinder-claude.sh --model claude-sonnet-4-6
+```
+
+```text
+帮我看一遍 README.md 和 CLAUDE.md，然后引导我配置 brain/gateway-stable.md 的北极星和项目概况。
+```
+
+手动安装路径也保留：
+
+```bash
+cp -r skeleton/* .
+cp skeleton/.env.example .env
+mv brain/gateway-stable.md.template brain/gateway-stable.md
+mv brain/gateway.md.template brain/gateway.md
+mv brain/gateway-delta.md.template brain/gateway-delta.md
+./scripts/install-curator-insights.sh --with-hook
+./scripts/cinder-claude.sh
+```
 
 可选：
 
 - 接飞书 bot → `docs/02-feishu-bot.md`
-- 装 A1 自动评分 → `./scripts/install-curator-insights.sh`
+- 只装 A1 自动评分 → `./scripts/install-curator-insights.sh --with-hook`
 
 ## 你需要准备
 
@@ -98,6 +123,8 @@ cinder-499/
 ├── templates/
 │   └── curator-insights/            # A1 评分工具源（待 install 脚本部署到 axon/）
 └── scripts/
+    ├── bootstrap-cinder.sh          # 从零装机：骨架 + .env + gateway + A1
+    ├── cinder-claude.sh             # 加载 .env 后启动 Claude Code
     └── install-curator-insights.sh  # A1 一键安装
 ```
 

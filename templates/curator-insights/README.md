@@ -20,9 +20,12 @@
 
 ## 用法
 
-> 假设你在仓根。脚本会自动定位仓根（CINDER_HOME env > ~/.cinder/config > 脚本位置推导）。
+> 假设你在仓根。脚本会自动定位仓根（CINDER_HOME env > ~/.cinder/config > 脚本位置推导），并自动读取仓根 `.env`。
 
 ```bash
+# 一键安装（推荐）
+./scripts/install-curator-insights.sh --with-hook
+
 # 单文件评分（dry-run 不写回不移动）
 uv run --directory axon/curator-insights \
   score_consolidate.py --dry-run \
@@ -82,11 +85,19 @@ PostToolUse hook 触发 instinct-counter.sh
 - 无新增 MCP server
 - 无 Web UI
 
+## 可配置项
+
+| env | 默认值 | 说明 |
+|---|---|---|
+| `CINDER_HOME` | `~/.cinder/config` 或脚本位置推导 | Cinder 仓根 |
+| `CINDER_A1_SCORE_MODEL` | `claude-haiku-4-5-20251001` | 评分模型；三方供应商不支持默认 Haiku 时改这里 |
+| `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` | `.env` | 三方 Anthropic 兼容 API 配置 |
+
 ## 故障排查
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| `claude --print failed (code 1)` | 没登录 / OAuth 过期 | `claude` 交互模式登录 |
+| `claude --print failed (code 1)` | `.env` 未填 / OAuth 过期 / 模型名不匹配 | 先跑 `./scripts/cinder-claude.sh --print "hi"` 验证 |
 | `Cannot parse JSON from claude output` | Haiku 偶发输出非 JSON | 兜底正则已抽 `{...}`；持续失败检查 prompt |
 | 评分偏严（高质量也只 5 分） | 跨周复现弱是真相 | 不是 bug；让稿子在 hold/ 待第二次复现 |
 

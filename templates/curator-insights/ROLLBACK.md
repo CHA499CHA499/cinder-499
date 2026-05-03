@@ -66,9 +66,10 @@ git checkout HEAD -- brain/insights/consolidate-*.md
 **症状**：`claude --print failed (code 1)`。
 
 **处理**（修复，不是回退）：
-1. OAuth：终端跑 `claude` 进交互模式重登录
-2. 三方 API：检查 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` 是否在当前 shell 生效
-3. 持续失败：检查 CLAUDE.md 是否被注入到 Haiku prompt
+1. 先跑 `./scripts/cinder-claude.sh --print "hi"` 验证 CLI + `.env`
+2. 三方 API：检查仓根 `.env` 里的 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN`
+3. 供应商不支持默认 Haiku 名称：在 `.env` 里设置 `CINDER_A1_SCORE_MODEL=<可用模型名>`
+4. 持续失败：检查 CLAUDE.md 是否被注入到 Haiku prompt
 
 ---
 

@@ -27,6 +27,14 @@ BRAIN_DIR="$CINDER_HOME/brain"
 CURATOR_DIR="$CINDER_HOME/axon/curator-insights"
 THRESHOLD=15  # 每 15 次 tool call 触发一次
 
+# 加载仓根 .env：确保 hook 里的 claude --print / A1 评分能拿到三方 API 配置。
+if [ -f "$CINDER_HOME/.env" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$CINDER_HOME/.env"
+  set +a
+fi
+
 # ============================================================
 # 2. 计数 + 阈值判断
 # ============================================================

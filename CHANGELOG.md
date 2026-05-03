@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-05-03 v0.2.1 · 新人装机脚本 + env 模板补强
+
+### 新增
+- `scripts/bootstrap-cinder.sh`：从零展开 `skeleton/`、生成 `.env`、初始化 gateway 三件套、写 `~/.cinder/config`，并默认安装 A1
+- `scripts/cinder-claude.sh`：自动加载仓根 `.env` 后启动 Claude Code，适配三方 API 使用者
+- A1 安装脚本支持 `--yes` / `--with-hook`，可用于非交互 bootstrap 和 hook 模板安装
+
+### 改进
+- `skeleton/.env.example` 扩成完整可复制模板，标明必填项、官方/三方 API 差异和 `CINDER_A1_SCORE_MODEL`
+- A1 hook 和评分脚本自动读取仓根 `.env`，评分模型/API 接入随 bootstrap 一起完成
+- README 的 5 分钟跑通改成一条 bootstrap 命令，保留手动安装路径
+- A1 文档补充统一装机路径和模型名覆盖方式
+
 ## 2026-05-03 v0.2.0 · SKILL.md 协议 + Gateway 三件套 + A1 评分系统
 
 > 4 月底 - 5 月初 CHA499 主仓打磨成熟的能力切片入 starter。

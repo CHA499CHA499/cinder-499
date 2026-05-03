@@ -51,13 +51,32 @@ def resolve_cinder_home() -> Path:
 
 
 REPO_ROOT = resolve_cinder_home()
+
+
+def load_dotenv(repo_root: Path) -> None:
+    """Load simple KEY=VALUE lines from .env without overriding existing env."""
+    env_path = repo_root / ".env"
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+load_dotenv(REPO_ROOT)
 INSIGHTS_DIR = REPO_ROOT / "brain" / "insights"
 PROMOTED_DIR = INSIGHTS_DIR / "promoted"
 HOLD_DIR = INSIGHTS_DIR / "hold"
 DISCARDED_DIR = INSIGHTS_DIR / "discarded"
 
 CLAUDE_BIN = "claude"
-SCORE_MODEL = "claude-haiku-4-5-20251001"
+SCORE_MODEL = os.environ.get("CINDER_A1_SCORE_MODEL", "claude-haiku-4-5-20251001")
 
 SCORE_SCHEMA = {
     "type": "object",

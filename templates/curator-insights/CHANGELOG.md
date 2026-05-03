@@ -6,6 +6,13 @@
 
 ---
 
+## 2026-05-03 v0.1.1 · 安装体验补强
+
+### 改进
+- 支持 `CINDER_A1_SCORE_MODEL` 环境变量覆盖默认评分模型，方便三方 API 供应商映射模型名
+- `score_consolidate.py` 自动读取仓根 `.env`，无需手动 export API 配置
+- 安装文档补充 `./scripts/install-curator-insights.sh --with-hook` 一键安装方式
+
 ## 2026-05-03 v0.1.0 · 首发
 
 ### 新增

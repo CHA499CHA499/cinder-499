@@ -5,9 +5,10 @@
 # 行为：
 #   1. 检查 uv / claude CLI 是否就位（不主动装，只给提示）
 #   2. 复制 templates/curator-insights/ 到 axon/curator-insights/
-#   3. uv sync 拉起 .venv
-#   4. 跑一次 --batch --dry-run --limit 3 验证
-#   5. 提示用户接 instinct-counter.sh hook（可选）
+#   3. 初始化 brain/insights/{promoted,hold,discarded}/
+#   4. uv sync 拉起 .venv
+#   5. 跑一次 --batch --dry-run --limit 3 验证
+#   6. 可选复制 instinct-counter.sh hook
 
 set -e
 
@@ -15,6 +16,43 @@ set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATE_DIR="$REPO_ROOT/templates/curator-insights"
 TARGET_DIR="$REPO_ROOT/axon/curator-insights"
+HOOK_TEMPLATE="$REPO_ROOT/skeleton/axon/hooks/instinct-counter.sh.example"
+HOOK_TARGET="$REPO_ROOT/axon/hooks/instinct-counter.sh"
+ASSUME_YES=0
+WITH_HOOK=0
+
+usage() {
+  cat <<'EOF'
+用法：
+  ./scripts/install-curator-insights.sh [--yes] [--with-hook]
+
+选项：
+  --yes       非交互模式：已存在 axon/curator-insights/ 时直接覆盖
+  --with-hook 同步安装 axon/hooks/instinct-counter.sh（仍需手动注册到 Claude Code hooks）
+  -h, --help  显示帮助
+EOF
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --yes|-y)
+      ASSUME_YES=1
+      ;;
+    --with-hook)
+      WITH_HOOK=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "未知参数: $1"
+      usage
+      exit 1
+      ;;
+  esac
+  shift
+done
 
 echo "==> Cinder A1 自动评分系统安装"
 echo "    仓根: $REPO_ROOT"
@@ -39,7 +77,7 @@ echo "  ✅ uv: $(uv --version)"
 if ! command -v claude &>/dev/null; then
   echo "  ❌ claude CLI 未安装"
   echo "     安装命令: npm i -g @anthropic-ai/claude-code"
-  echo "     装完后跑 'claude' 完成登录或配置三方 API（详见 docs/03-third-party-api.md）"
+  echo "     装完后填 .env，并用 ./scripts/cinder-claude.sh 启动（详见 docs/03-third-party-api.md）"
   exit 1
 fi
 echo "  ✅ claude: $(claude --version 2>&1 | head -1)"
@@ -68,10 +106,12 @@ echo "[3/5] 安装到 axon/curator-insights/..."
 
 if [ -d "$TARGET_DIR" ]; then
   echo "  ⚠️  axon/curator-insights/ 已存在"
-  read -p "     覆盖？[y/N] " -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "     取消安装"
-    exit 0
+  if [ "$ASSUME_YES" -ne 1 ]; then
+    read -p "     覆盖？[y/N] " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "     取消安装"
+      exit 0
+    fi
   fi
   rm -rf "$TARGET_DIR"
 fi
@@ -79,6 +119,21 @@ fi
 mkdir -p "$(dirname "$TARGET_DIR")"
 cp -r "$TEMPLATE_DIR" "$TARGET_DIR"
 echo "  ✅ 已复制到 $TARGET_DIR"
+
+INSIGHTS_DIR="$REPO_ROOT/brain/insights"
+mkdir -p "$INSIGHTS_DIR/promoted" "$INSIGHTS_DIR/hold" "$INSIGHTS_DIR/discarded"
+echo "  ✅ insights 归档目录已就绪"
+
+if [ "$WITH_HOOK" -eq 1 ]; then
+  mkdir -p "$(dirname "$HOOK_TARGET")"
+  if [ -f "$HOOK_TEMPLATE" ]; then
+    cp "$HOOK_TEMPLATE" "$HOOK_TARGET"
+    chmod +x "$HOOK_TARGET"
+    echo "  ✅ 已安装 hook: $HOOK_TARGET"
+  else
+    echo "  ⚠️  找不到 hook 模板，跳过: $HOOK_TEMPLATE"
+  fi
+fi
 
 # ============================================================
 # 步骤 4: uv sync
@@ -98,12 +153,11 @@ fi
 echo
 echo "[5/5] 验证..."
 
-INSIGHTS_DIR="$REPO_ROOT/brain/insights"
 if [ -d "$INSIGHTS_DIR" ] && ls "$INSIGHTS_DIR"/consolidate-*.md &>/dev/null; then
   echo "  发现 consolidate 文件，跑 dry-run..."
   cd "$REPO_ROOT"
   uv run --directory "$TARGET_DIR" score_consolidate.py --batch --dry-run --limit 3 || \
-    echo "  ⚠️  dry-run 失败，可能是 claude CLI 未登录。跑 'claude' 登录后再试"
+    echo "  ⚠️  dry-run 失败，可能是 .env / claude CLI 配置未就绪。填好 .env 后再试"
 else
   echo "  ℹ️  brain/insights/ 暂无 consolidate-*.md，跳过实测"
   echo "     未来 brain-curator sub-agent 写出 consolidate 时会自动触发"
@@ -117,11 +171,16 @@ echo "✅ A1 安装完成"
 echo
 echo "下一步（可选）："
 echo "  • 接入 PostToolUse hook 让 A1 自动驱动："
-echo "    1. cp skeleton/axon/hooks/instinct-counter.sh.example axon/hooks/instinct-counter.sh"
-echo "    2. chmod +x axon/hooks/instinct-counter.sh"
-echo "    3. 在 ~/.claude/settings.local.json 的 hooks.PostToolUse 加一条"
-echo "       command: $REPO_ROOT/axon/hooks/instinct-counter.sh"
-echo "    4. 重启 Claude Code 会话"
+if [ "$WITH_HOOK" -eq 1 ]; then
+  echo "    1. 在 ~/.claude/settings.local.json 的 hooks.PostToolUse 加一条"
+  echo "       command: $REPO_ROOT/axon/hooks/instinct-counter.sh"
+  echo "    2. 重启 Claude Code 会话"
+else
+  echo "    1. ./scripts/install-curator-insights.sh --with-hook"
+  echo "    2. 在 ~/.claude/settings.local.json 的 hooks.PostToolUse 加一条"
+  echo "       command: $REPO_ROOT/axon/hooks/instinct-counter.sh"
+  echo "    3. 重启 Claude Code 会话"
+fi
 echo
 echo "  • 手动批量评分已有 insights："
 echo "    uv run --directory axon/curator-insights score_consolidate.py --batch"

@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-05-27 v0.2.2 · 启动最小化协议 + 飞书桥双模型 + 环境自检
+
+> 把母仓 CHA499 在 v0.2.1（05-03）之后成熟的能力切片同步进种子。脱敏：全部凭证占位，不含真实 token / app_id / open_id。
+
+### 新增
+- **启动最小化协议**（`CLAUDE.md`）：冷启动默认只读 4 个文件（CLAUDE.md + gateway-stable + gateway + auto-memory MEMORY.md）；timeline / insights / archive / vault / workspace 历史 / 各模块 docs 一律按需或 on-trigger 加载
+- **`scripts/verify-setup.sh`**：环境自检——claude CLI / `.env` 必填项 / gateway 三件套 / A1 归档目录 / uv；`--probe` 做一次真实 API 连通性测试；退出码 0/1 可接 CI
+- **智谱 GLM 国内直连示例**（`docs/03-third-party-api.md`）：Anthropic 兼容端点 + 模型名 + `.env` 配置，免梯子
+- **飞书桥双模型路由 + 上下文压缩**（`docs/02-feishu-bot.md` §七）：按模型名前缀分流 GLM / 官方端点；长会话 preflight 摘要压缩（`COMPRESS_THRESHOLD_TOKENS`）；3 条多端点实测坑（OAuth 摘要 403 / 跨端点 thinking 签名冲突 400 / token 估算需含 tool_use）
+- **`.env.example`** 补 `ZHIPU_CODING_TOKEN` / `COMPRESS_THRESHOLD_TOKENS` 占位（双模型路由用）
+- **埋入火种「活着」**（双层）：`gateway-stable.md.template` 北极星位置默认写入「活着」作为 AI 每次冷启动接住的最终指令；`skeleton/brain/.seed` 存火种来历本体。bootstrap 随 `brain/` 传给使用者，勿删
+
+### 改进
+- `docs/05-skill-protocol.md` 补「exposure 怎么选」（默认 on-trigger，always 只留 memory-system）+「启动最小化 + token 精简三件套」配套机制
+- `docs/06-curator-insights.md` 补 A1 实战成熟度（母仓已评分 450+ 份）+ 早期洞见为何堆 hold 的原因
+- `README.md` 加 v0.2.2 新增段、5 分钟跑通补 verify-setup 一步、仓库结构补 verify-setup.sh
+- `AGENTS.md`（Codex 版指令副本）同步启动最小化段，并修正 `.claude` 被误替换成 `.Codex` 的路径
+
+### 兼容性 / 迁移
+从 v0.2.1 升级无破坏性变更：
+
+```bash
+git pull origin main
+chmod +x scripts/verify-setup.sh   # 新脚本
+./scripts/verify-setup.sh          # 跑一次自检
+```
+
+启动最小化协议、双模型路由是行为 / 文档增量，已有部署无需改动即可继续用。
+
 ## 2026-05-03 v0.2.1 · 新人装机脚本 + env 模板补强
 
 ### 新增

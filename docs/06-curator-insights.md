@@ -19,6 +19,8 @@ A1 做的事：
 - **evidence**：sources 数量 + 实证密度 + 是否跨周复现
 - **actionability**：能否写成 if-then / 检查表 / 脚本
 
+> **成熟度**：母仓 CHA499 已用这套机制自动评分 450+ 份 consolidate，逻辑稳定、promote / hold / discard 全自动归档无需人工值守。本模块即从该实战版本切片而来。
+
 ## 安装（一键）
 
 ```bash
@@ -109,7 +111,7 @@ A1 配套的"自动驱动器"是 `axon/hooks/instinct-counter.sh`：每 N 次 to
 - **依赖 `claude` CLI**：用 `claude --print` 跑评分。A1 会自动读取仓根 `.env`，三方 API 用户填好 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` 即可
 - **模型名可覆盖**：默认评分模型是 Haiku；供应商不支持时设置 `CINDER_A1_SCORE_MODEL`
 - **Haiku 偶发输出非 JSON**：脚本有正则兜底
-- **冷静评分偏严**：高质量稿子也常拿 5 分进 hold，第一次跑批量 promote 比例 5-30% 是正常的
+- **冷静评分偏严**：高质量稿子也常拿 5 分进 hold，第一次跑批量 promote 比例 5-30% 属正常。早期 consolidate 尤其容易堆在 `hold/`——因为 evidence 维度看重「跨周复现」，刚写的洞见还没复现证据，天然拿不到高分；过段时间复现后重评才会升上去。这是设计如此，不是 bug
 - **不评分早期人工 insights**：只处理 `consolidate-*.md` 文件名
 
 ## 卸载

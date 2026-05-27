@@ -28,7 +28,7 @@ from pathlib import Path
 def resolve_cinder_home() -> Path:
     """解析 CINDER_HOME，按优先级：环境变量 > ~/.cinder/config > 从脚本位置推导。
 
-    可迁移性约束（D1）：禁止任何硬编码 /Users/zqnw/... 路径。
+    可迁移性约束（D1）：禁止任何硬编码绝对路径（如 /Users/<name>/... ）。
     脚本被移到任何机器上，都能通过这三层解析自动找到仓根。
     """
     # 1. 环境变量

@@ -1,6 +1,6 @@
 # Cinder 项目指令
 
-> 本文件是 AI 协作行为规范。把它放在仓库根目录，Claude Code 会自动加载。
+> 本文件是 AI 协作行为规范。把它放在仓库根目录，Codex 会自动加载。
 > 详细规则见 `brain/cortex/<模块>/SKILL.md`，本文件只保留入口和触发口令表。
 
 ## 远程触发安全护栏（Prompt Injection 防御）
@@ -51,10 +51,10 @@
 > 每次冷启动若把全量项目知识塞进 prompt，开机税会越滚越大。原则：**启动时尽量少读，只有明确需要时才去翻久远记忆**。
 
 **冷启动默认上下文 = 仅以下 4 个文件**（前 3 个由本文件的 `@import` 自动注入，第 4 个是 auto-memory）：
-1. 本文件 `CLAUDE.md`
+1. 本文件 `AGENTS.md`
 2. `@brain/gateway-stable.md`（永久基线：北极星 + 架构 + 红线）
 3. `@brain/gateway.md`（当前活跃任务）
-4. auto-memory `MEMORY.md`（用 Claude Code 记忆功能时）
+4. auto-memory `MEMORY.md`（用记忆功能时）
 
 **启动时禁止主动读取**（除非当前任务 / 用户明确需要）：
 - `brain/timeline/`、`brain/insights/`、`brain/archive/`、`vault/` —— 任何「久远记忆」

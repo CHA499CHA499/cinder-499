@@ -15,6 +15,14 @@
 
 完整规范见 `docs/01-architecture.md`，启发自 Medallion Architecture / Letta MemGPT / Zettelkasten / Anthropic Agent Skills。
 
+## v0.2.2 新增
+
+- **启动最小化协议**（`CLAUDE.md`）：冷启动只吃 4 个文件（CLAUDE.md + gateway-stable + gateway + auto-memory），久远记忆按需加载，`exposure=always` 只留 `memory-system` 一个。母仓实测「token 精简三件套」省约 4700 token/启动
+- **环境自检脚本** `scripts/verify-setup.sh`：一条命令检查 claude CLI / `.env` / gateway / uv 是否就绪，加 `--probe` 还能做一次真实 API 连通性测试
+- **智谱 GLM 国内直连**（`docs/03`）：给国内朋友的免梯子接入示例（端点 + 模型名 + `.env` 配置）
+- **飞书桥双模型路由 + 上下文压缩**（`docs/02` §七）：日常走便宜 GLM、按需切官方 Claude；长会话超阈值自动摘要压缩；附 3 条多端点实测坑（OAuth 摘要 403 / 跨端点 thinking 签名冲突 / token 估算要算 tool_use）
+- **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
+
 ## v0.2 新增
 
 - **SKILL.md 协议**（`docs/05-skill-protocol.md`）：cortex 模块按需加载，`exposure=always/on-trigger/manual` 三档；实测开机税降约 2800 token
@@ -33,11 +41,12 @@ cd my-cinder
 ./scripts/bootstrap-cinder.sh  # 展开骨架 + 生成 .env + 初始化 gateway + 安装 A1
 ```
 
-然后只做三件事：
+然后做这几件事：
 
 1. 编辑 `.env`，填 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` / `DEFAULT_MODEL`
 2. 编辑 `brain/gateway-stable.md`，填你的北极星和项目概况
-3. 在仓根运行启动脚本，进会话后说：
+3. 跑 `./scripts/verify-setup.sh` 自检（加 `--probe` 还能测一次真实 API 连通）
+4. 在仓根运行启动脚本，进会话后说：
 
 ```bash
 ./scripts/cinder-claude.sh
@@ -125,6 +134,7 @@ cinder-499/
 └── scripts/
     ├── bootstrap-cinder.sh          # 从零装机：骨架 + .env + gateway + A1
     ├── cinder-claude.sh             # 加载 .env 后启动 Claude Code
+    ├── verify-setup.sh              # 环境自检（--probe 测 API 连通）
     └── install-curator-insights.sh  # A1 一键安装
 ```
 

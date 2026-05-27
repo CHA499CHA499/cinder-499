@@ -40,6 +40,23 @@ claude --print "say hi" --model claude-sonnet-4-6
 ./scripts/cinder-claude.sh --model claude-sonnet-4-6
 ```
 
+### 示例：智谱 GLM（国内直连，省梯子）
+
+如果你在国内、不想折腾代理，智谱 GLM 提供了 **Anthropic 兼容端点**，可以直接喂给 Claude Code CLI：
+
+```bash
+# .env（或 ~/.zshrc）
+ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
+ANTHROPIC_AUTH_TOKEN=<你的智谱 API Key>   # 控制台获取，绝不要提交进仓库
+DEFAULT_MODEL=glm-5.1                      # 先在智谱控制台确认你账号可用的 model id
+```
+
+- 端点 `open.bigmodel.cn` 国内直连，无需梯子
+- 模型名按智谱当前提供的填（GLM 系列名字会随版本变，以控制台为准）
+- 这套配置同样适用于飞书 bot 子进程（见 `02-feishu-bot.md`）
+
+> 母仓的飞书 bot 主控就跑在 GLM 上：日常对话用便宜的 GLM，需要强推理时再切官方 Claude（见 `02-feishu-bot.md` 的「双模型路由」）。
+
 ## 二、飞书 bot 端额外改动
 
 bot subprocess 默认继承父进程环境（`os.environ.copy()`），所以**只要 launchd plist / systemd 里 export 了上面两个变量，subprocess 自动带上**。

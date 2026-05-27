@@ -137,6 +137,43 @@ launchctl list | grep feishu-claude
 tail -f /tmp/feishu-claude.log
 ```
 
-## 七、安全护栏（必看）
+## 七、进阶：双模型路由 + 上下文压缩（可选）
+
+手机端长时间对话有两个痛点：① 强模型贵；② 会话越滚越长迟早爆 context。母仓 CHA499 的 bot 用两招解决，原理通用，理解后可在你的 bot 上自行接（开源版 feishu-claude-code 不自带）。
+
+### 双模型路由
+
+按模型名前缀把请求分流到不同端点：
+
+- `glm-*`（如 `glm-5.1`）→ 智谱兼容端点 `https://open.bigmodel.cn/api/anthropic`，国内直连
+- `claude-*`（opus / sonnet / haiku）→ 官方 Anthropic 端点（按需走代理）
+
+日常对话默认走便宜的 GLM，需要强推理时再切官方 Claude（母仓 bot 加了 `/model` 热切换命令，原版需自己加）。
+
+env 大致如下（**全部占位，绝不要把真实 token 提交进仓库**）：
+
+```
+DEFAULT_MODEL=glm-5.1
+ZHIPU_CODING_TOKEN=<你的智谱 token>          # glm-* 端点用
+ANTHROPIC_AUTH_TOKEN=<你的官方/中转 token>   # claude-* 端点用
+```
+
+### 客户端压缩（preflight）
+
+调 CLI 之前先估算本轮 token，超阈值就用便宜模型把历史压成结构化摘要、开新会话注入，避免长会话爆炸：
+
+```
+COMPRESS_THRESHOLD_TOKENS=40000   # 超过此值触发压缩，按预算调
+```
+
+### 接这两招会踩的 3 个坑（母仓 2026-05 实测）
+
+1. **后台摘要 403**：用 OAuth 订阅认证时，bot 的「后台生成摘要」若裸调官方 `api.anthropic.com` 会被拒（403）。解法：摘要请求也走你 `.env` 里配置的兼容端点（如 GLM），别让它绕过配置直连官方。
+2. **跨端点 thinking 签名冲突（400）**：GLM 生成的 thinking 块没有 Anthropic 签名，直接 resume 同一会话切到 Claude 会因签名校验失败被拒。解法：**跨端点切模型时强制开新会话**（同端点内切才保留 resume）。
+3. **token 估算别只算文本**：只统计纯文本会严重低估——`tool_use` / `tool_result` 往往是大头。估算时把工具调用的输入输出一起算进去，否则压缩永远不触发、照样爆。
+
+> 这三条是通用经验，不限于飞书 bot——任何「多端点 + 长会话 + 自动摘要」的场景都适用。
+
+## 八、安全护栏（必看）
 
 bot 跑在你本机，能动你的代码、commit、装包。**必须做隔离**，详见 `04-isolation-pattern.md`。

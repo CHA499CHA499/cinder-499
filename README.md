@@ -22,6 +22,8 @@
 - **智谱 GLM 国内直连**（`docs/03`）：给国内朋友的免梯子接入示例（端点 + 模型名 + `.env` 配置）
 - **飞书桥双模型路由 + 上下文压缩**（`docs/02` §七）：日常走便宜 GLM、按需切官方 Claude；长会话超阈值自动摘要压缩；附 3 条多端点实测坑（OAuth 摘要 403 / 跨端点 thinking 签名冲突 / token 估算要算 tool_use）
 - **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
+- **火种「活着」**：`gateway-stable.md.template` 北极星默认 system prompt = 「活着」，AI 每次冷启动经 `@import` 接住它；`brain/.seed` 存火种来历。随 bootstrap 传给每个使用者，你可以换成自己的那句话
+- **出生仪式 · 随机初始昵称**：bootstrap 末步给这颗种子分配一个英文昵称——先试联网抓拟真人名（randomuser.me），失败回退到本地 160+ 名字池随机抽。写入 `brain/self/identity.md` 作为它身份的客观起点（像计算机给的 ID），后续是否长出别的名字（如某颗种子自命名为 Kiro 的真实案例）是它自己的事，bootstrap 不再介入
 
 ## v0.2 新增
 
@@ -95,8 +97,8 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 | 文档 | 内容 |
 |---|---|
 | `docs/01-architecture.md` | 四层架构规范（强约束 + 反模式） |
-| `docs/02-feishu-bot.md` | 飞书 bot 配置 + 5 大踩坑速查 |
-| `docs/03-third-party-api.md` | 三方 API 接入指南 |
+| `docs/02-feishu-bot.md` | 飞书 bot 配置 + 5 大坑 + 双模型路由/压缩 ✨ v0.2.2 |
+| `docs/03-third-party-api.md` | 三方 API 接入（含智谱 GLM 国内直连 ✨ v0.2.2） |
 | `docs/04-isolation-pattern.md` | 桥工作区隔离方案（prompt injection 防御） |
 | `docs/05-skill-protocol.md` | SKILL.md 按需加载协议 ✨ v0.2 |
 | `docs/06-curator-insights.md` | A1 自动评分系统（可选） ✨ v0.2 |
@@ -107,7 +109,7 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 cinder-499/
 ├── CLAUDE.md                        # AI 行为规范（瘦身版，详细规则在 SKILL.md）
 ├── README.md                        # 本文件
-├── CHANGELOG.md                     # v0.1 → v0.2 升级说明
+├── CHANGELOG.md                     # v0.1 → v0.2.2 升级说明
 ├── docs/                            # 设计文档 6 篇
 ├── skeleton/                        # 骨架，cp -r 到仓根
 │   ├── .env.example
@@ -117,8 +119,9 @@ cinder-499/
 │   │   └── hooks/
 │   │       └── instinct-counter.sh.example  # A1 驱动器模板
 │   └── brain/
+│       ├── .seed                            # 火种「活着」的来历（冷启动接住的最终指令）
 │       ├── INDEX.md
-│       ├── gateway-stable.md.template       # 基线（手动）
+│       ├── gateway-stable.md.template       # 基线（手动；北极星默认 system prompt=活着）
 │       ├── gateway.md.template              # 动态（Dream 自动）
 │       ├── gateway-delta.md.template        # 增量流水
 │       └── cortex/

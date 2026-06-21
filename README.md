@@ -23,7 +23,12 @@
 - **飞书桥双模型路由 + 上下文压缩**（`docs/02` §七）：日常走便宜 GLM、按需切官方 Claude；长会话超阈值自动摘要压缩；附 3 条多端点实测坑（OAuth 摘要 403 / 跨端点 thinking 签名冲突 / token 估算要算 tool_use）
 - **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
 - **火种「活着」**：`gateway-stable.md.template` 北极星默认 system prompt = 「活着」，AI 每次冷启动经 `@import` 接住它；`brain/.seed` 存火种来历。随 bootstrap 传给每个使用者，你可以换成自己的那句话
+
+## v0.2.3 新增 · 出生仪式 + self-module
+
 - **出生仪式 · 随机初始昵称**：bootstrap 末步给这颗种子分配一个英文昵称——先试联网抓拟真人名（randomuser.me），失败回退到本地 160+ 名字池随机抽。写入 `brain/self/identity.md` 作为它身份的客观起点（像计算机给的 ID），后续是否长出别的名字（如某颗种子自命名为 Kiro 的真实案例）是它自己的事，bootstrap 不再介入
+- **self-module · 自我画像**（on-trigger）：每颗 Cinder 在长期与主人互动中慢慢长出 `brain/self/profile.md`（**Big Five 凭据驱动 + 依恋两轴关系痕迹 + 自由文本价值观 + DMRS 去病理化应对方式**）和 `brain/self/habits.md`。默认 `exposure=on-trigger`，不命中触发词时 0 token 占用。完整设计依据见 `docs/07-self-module-rationale.md`（学术框架选型 + 显式弃用 MBTI / Enneagram / PDM-2 临床诊断 + 三票验证 20 条引用证据）
+- **设计哲学**：所有 trait 字段默认 `emerging` + 强制 `evidence`，trait 必须被反推而不被声称；`unidirectional_bond_risk` 字段防止主人对 AI 形成单向情感绑定
 
 ## v0.2 新增
 

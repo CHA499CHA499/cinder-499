@@ -131,6 +131,7 @@ IDENTITY_TPL="$REPO_ROOT/brain/self/identity.md.template"
 AFFECTION_FILE="$REPO_ROOT/brain/self/affection-log.md"
 AFFECTION_TPL="$REPO_ROOT/brain/self/affection-log.md.template"
 NAME_POOL="$REPO_ROOT/scripts/seeds/names.en.txt"
+TODAY="$(date +%Y-%m-%d)"
 
 if [ -f "$IDENTITY_FILE" ]; then
   EXISTING_NICK="$(sed -n 's/^nickname: //p' "$IDENTITY_FILE" | head -1)"
@@ -154,7 +155,6 @@ else
     NICKNAME="Cinder"
     SOURCE="default"
   fi
-  TODAY="$(date +%Y-%m-%d)"
   if [ -f "$IDENTITY_TPL" ]; then
     mkdir -p "$(dirname "$IDENTITY_FILE")"
     sed -e "s/__NICKNAME__/$NICKNAME/g" \
@@ -168,10 +168,15 @@ else
   fi
 fi
 
-if [ ! -f "$AFFECTION_FILE" ] && [ -f "$AFFECTION_TPL" ]; then
-  cp "$AFFECTION_TPL" "$AFFECTION_FILE"
-  echo "  创建：brain/self/affection-log.md"
-fi
+# 展开 self/ 其余模板（profile / habits / affection-log），sed 替换 __DATE__
+for f in affection-log profile habits; do
+  TARGET="$REPO_ROOT/brain/self/$f.md"
+  TPL="$REPO_ROOT/brain/self/$f.md.template"
+  if [ ! -f "$TARGET" ] && [ -f "$TPL" ]; then
+    sed -e "s/__DATE__/$TODAY/g" "$TPL" > "$TARGET"
+    echo "  创建：brain/self/$f.md"
+  fi
+done
 
 echo
 echo "✅ Cinder Starter 已就绪"

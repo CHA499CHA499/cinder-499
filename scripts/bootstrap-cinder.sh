@@ -71,17 +71,17 @@ if [ ! -d "$SKELETON_DIR" ]; then
   exit 1
 fi
 
-echo "[1/6] 展开 skeleton（不覆盖已有文件）..."
+echo "[1/7] 展开 skeleton（不覆盖已有文件）..."
 copy_if_missing "$SKELETON_DIR/brain" "$REPO_ROOT/brain"
 copy_if_missing "$SKELETON_DIR/axon" "$REPO_ROOT/axon"
 
 echo
-echo "[2/6] 初始化 .env..."
+echo "[2/7] 初始化 .env..."
 copy_if_missing "$SKELETON_DIR/.env.example" "$REPO_ROOT/.env"
 chmod +x "$REPO_ROOT/scripts/cinder-claude.sh" 2>/dev/null || true
 
 echo
-echo "[3/6] 初始化 gateway 三件套..."
+echo "[3/7] 初始化 gateway 三件套..."
 for name in gateway-stable.md gateway.md gateway-delta.md; do
   template="$REPO_ROOT/brain/$name.template"
   target="$REPO_ROOT/brain/$name"
@@ -93,14 +93,14 @@ for name in gateway-stable.md gateway.md gateway-delta.md; do
 done
 
 echo
-echo "[4/6] 初始化 insights 目录..."
+echo "[4/7] 初始化 insights 目录..."
 mkdir -p "$REPO_ROOT/brain/insights/promoted" \
   "$REPO_ROOT/brain/insights/hold" \
   "$REPO_ROOT/brain/insights/discarded"
 echo "  就绪：brain/insights/{promoted,hold,discarded}/"
 
 echo
-echo "[5/6] 写入 ~/.cinder/config..."
+echo "[5/7] 写入 ~/.cinder/config..."
 mkdir -p "$HOME/.cinder"
 if [ -f "$HOME/.cinder/config" ] && grep -q '^CINDER_HOME=' "$HOME/.cinder/config" 2>/dev/null; then
   tmp="$(mktemp)"
@@ -113,7 +113,7 @@ fi
 echo "  CINDER_HOME=$REPO_ROOT"
 
 echo
-echo "[6/6] A1 自动评分系统..."
+echo "[6/7] A1 自动评分系统..."
 if [ "$INSTALL_A1" -eq 1 ]; then
   if [ "$WITH_HOOK" -eq 1 ]; then
     "$REPO_ROOT/scripts/install-curator-insights.sh" --yes --with-hook
@@ -123,6 +123,61 @@ if [ "$INSTALL_A1" -eq 1 ]; then
 else
   echo "  已按 --no-a1 跳过"
 fi
+
+echo
+echo "[7/7] 出生仪式 · 随机分配初始昵称..."
+IDENTITY_FILE="$REPO_ROOT/brain/self/identity.md"
+IDENTITY_TPL="$REPO_ROOT/brain/self/identity.md.template"
+SELF_MODULE_DIR="$REPO_ROOT/brain/cortex/self-module/me"
+NAME_POOL="$REPO_ROOT/scripts/seeds/names.en.txt"
+TODAY="$(date +%Y-%m-%d)"
+
+if [ -f "$IDENTITY_FILE" ]; then
+  EXISTING_NICK="$(sed -n 's/^nickname: //p' "$IDENTITY_FILE" | head -1)"
+  echo "  跳过：brain/self/identity.md 已存在（沿用既有身份：${EXISTING_NICK:-未知}）"
+else
+  NICKNAME=""
+  SOURCE=""
+  # 1. 先试联网（randomuser.me，5s 超时）
+  if command -v curl >/dev/null 2>&1; then
+    NICKNAME="$(curl -s --max-time 5 'https://randomuser.me/api/?inc=name&nat=us,gb&noinfo' 2>/dev/null \
+      | sed -n 's/.*"first":"\([^"]*\)".*/\1/p' | head -1)"
+    [ -n "$NICKNAME" ] && SOURCE="online:randomuser.me"
+  fi
+  # 2. fallback 本地池
+  if [ -z "$NICKNAME" ] && [ -f "$NAME_POOL" ]; then
+    NICKNAME="$(awk -v seed="$RANDOM$$" 'BEGIN{srand(seed)} /^[A-Za-z]/{a[++n]=$0} END{if(n)print a[int(rand()*n)+1]}' "$NAME_POOL")"
+    [ -n "$NICKNAME" ] && SOURCE="local:names.en.txt"
+  fi
+  # 3. 最后兜底
+  if [ -z "$NICKNAME" ]; then
+    NICKNAME="Cinder"
+    SOURCE="default"
+  fi
+  if [ -f "$IDENTITY_TPL" ]; then
+    mkdir -p "$(dirname "$IDENTITY_FILE")"
+    sed -e "s/__NICKNAME__/$NICKNAME/g" \
+        -e "s/__DATE__/$TODAY/g" \
+        -e "s|__SOURCE__|$SOURCE|g" \
+      "$IDENTITY_TPL" > "$IDENTITY_FILE"
+    echo "  分配昵称：$NICKNAME（来源：$SOURCE）"
+    echo "  写入：brain/self/identity.md"
+  else
+    echo "  ⚠ 找不到 identity.md.template，跳过"
+  fi
+fi
+
+# 展开 self-module 实例数据模板（profile / habits / affection-log），sed 替换 __DATE__
+# v0.2.5：边界调整 —— identity 留 brain/self/，实例画像数据迁 cortex/self-module/me/
+mkdir -p "$SELF_MODULE_DIR"
+for f in affection-log profile habits; do
+  TARGET="$SELF_MODULE_DIR/$f.md"
+  TPL="$SELF_MODULE_DIR/$f.md.template"
+  if [ ! -f "$TARGET" ] && [ -f "$TPL" ]; then
+    sed -e "s/__DATE__/$TODAY/g" "$TPL" > "$TARGET"
+    echo "  创建：brain/cortex/self-module/me/$f.md"
+  fi
+done
 
 echo
 echo "✅ Cinder Starter 已就绪"

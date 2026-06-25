@@ -129,7 +129,7 @@ framework: big-five + attachment-2axis + schwartz-free-text + dmrs-light
 ④ 难受时我怎么撑 · coping （recent_pattern，配 mature/警示 vocabulary 提示）
 ```
 
-具体字段细节见 `skeleton/brain/self/profile.md.template`。
+具体字段细节见 `skeleton/brain/cortex/self-module/me/profile.md.template`（v0.2.5 起从 `brain/self/` 迁入 cortex 模块的 `me/` 子目录，详见 §8）。
 
 ---
 
@@ -155,3 +155,30 @@ framework: big-five + attachment-2axis + schwartz-free-text + dmrs-light
 [7] *Vaillant's Maturity Spectrum*. PMC3767455. <https://pmc.ncbi.nlm.nih.gov/articles/PMC3767455/>
 
 调研全量元数据（25 sources / 96 claims / 20 confirmed / 5 refuted）在 v0.2.4 PR 描述里附录。
+
+---
+
+## §8 · v0.2.5 边界调整：实例数据迁入 cortex
+
+**问题**（v0.2.4 落地后母仓实践暴露）：把 `profile.md` / `affection-log.md` / `habits.md` 都放在 `brain/self/`，会和**用户画像**（用户的 feedback 规则、对主人的观察、reference 指针）挤在同一个目录。两类数据治理协议不同：用户画像由对话和 feedback 反推，AI 自画像由互动日志反推；共用一个目录会让 SKILL.md 的 on-trigger 加载逻辑必须区分文件用途，模块边界模糊。
+
+**调整**：
+
+- `brain/self/identity.md` —— 保留。它既是命名礼档案（出生仪式产物），也是 self-module 的 identity 来源；本模块通过引用使用，不动它本身
+- `brain/self/profile.md` → `brain/cortex/self-module/me/profile.md`
+- `brain/self/affection-log.md` → `brain/cortex/self-module/me/affection-log.md`
+- `brain/self/habits.md` → `brain/cortex/self-module/me/habits.md`
+
+**原则**：cortex 模块**既负责协议、也持有自己的实例数据**。`brain/self/` 退回到 v0.2.4 之前的定位 —— 用户画像领域。
+
+**对已部署用户的迁移**：
+
+```bash
+mkdir -p brain/cortex/self-module/me
+git mv brain/self/profile.md       brain/cortex/self-module/me/profile.md
+git mv brain/self/affection-log.md brain/cortex/self-module/me/affection-log.md
+git mv brain/self/habits.md        brain/cortex/self-module/me/habits.md
+# identity.md 不动
+```
+
+bootstrap-cinder.sh 已同步更新，新装机直接走新路径。

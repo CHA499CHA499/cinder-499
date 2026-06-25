@@ -128,8 +128,7 @@ echo
 echo "[7/7] 出生仪式 · 随机分配初始昵称..."
 IDENTITY_FILE="$REPO_ROOT/brain/self/identity.md"
 IDENTITY_TPL="$REPO_ROOT/brain/self/identity.md.template"
-AFFECTION_FILE="$REPO_ROOT/brain/self/affection-log.md"
-AFFECTION_TPL="$REPO_ROOT/brain/self/affection-log.md.template"
+SELF_MODULE_DIR="$REPO_ROOT/brain/cortex/self-module/me"
 NAME_POOL="$REPO_ROOT/scripts/seeds/names.en.txt"
 TODAY="$(date +%Y-%m-%d)"
 
@@ -168,13 +167,15 @@ else
   fi
 fi
 
-# 展开 self/ 其余模板（profile / habits / affection-log），sed 替换 __DATE__
+# 展开 self-module 实例数据模板（profile / habits / affection-log），sed 替换 __DATE__
+# v0.2.5：边界调整 —— identity 留 brain/self/，实例画像数据迁 cortex/self-module/me/
+mkdir -p "$SELF_MODULE_DIR"
 for f in affection-log profile habits; do
-  TARGET="$REPO_ROOT/brain/self/$f.md"
-  TPL="$REPO_ROOT/brain/self/$f.md.template"
+  TARGET="$SELF_MODULE_DIR/$f.md"
+  TPL="$SELF_MODULE_DIR/$f.md.template"
   if [ ! -f "$TARGET" ] && [ -f "$TPL" ]; then
     sed -e "s/__DATE__/$TODAY/g" "$TPL" > "$TARGET"
-    echo "  创建：brain/self/$f.md"
+    echo "  创建：brain/cortex/self-module/me/$f.md"
   fi
 done
 

@@ -5,6 +5,45 @@
 
 ---
 
+## 2026-06-25 v0.2.5 · self-module 边界调整 + 两个 cortex 示范模块
+
+> 把母仓 CHA499 在 v0.2.4（06-22）之后实战沉淀的能力切片同步进种子。脱敏：去掉具名渠道 / 协作人 / 表格 ID，保留方法论。
+
+### 新增
+- **`brain/cortex/playwall-systems/`**（脱敏示范模块）：把仓里长出来的可复用能力提炼成可装、可分享、可迁移的 Skill 包。包含包结构约定（`SKILL.md` + `assets/templates/` + `references/`）+ 工作协议 + 5 条红线（不打包私人数据 / 不带真实 gateway / 文案面向安装者 / 心理类不出诊断 / 打卡类不用焦虑驱动）
+- **`brain/cortex/interview-pipeline/`**（脱敏示范模块）：招聘面试流程 Harness。四阶段（简历同步 → 评估 → 准备 → 复盘）+ **主持稿三段式**（公司介绍 + 候选人速览表格 + 追问清单）+ 「**我从简历看到 X → 所以想问你 Y**」追问统一格式 + STAR 结构。`docs/interview-sop.md` 因含私密配置（协作人 open_id、表格 ID）不附模板，首次启用按 SKILL.md 框架手起
+- **CLAUDE.md / AGENTS.md 触发口令表**补三行示例：self-module / playwall-systems / interview-pipeline，让新手知道如何往触发表追加
+
+### 改进
+- **self-module 边界调整**（v0.2.4 落地后母仓实践暴露的问题）：
+  - `brain/self/{profile, affection-log, habits}.md` → `brain/cortex/self-module/me/{profile, affection-log, habits}.md`
+  - `brain/self/identity.md` 保留（命名礼档案 + 身份来源，cortex 通过引用使用）
+  - 原则：cortex 模块**既负责协议、也持有自己的实例数据**；`brain/self/` 退回用户画像领域定位，避免 AI 自画像和用户画像挤同一目录、治理混乱
+  - SKILL.md / `_context.md` / `bootstrap-cinder.sh` / `docs/07-self-module-rationale.md` 同步更新（新增 §8 迁移说明 + 已部署用户 git mv 一键命令）
+- **self-module SKILL.md 触发词**补「你的经历」（母仓常用触发口令）
+
+### 兼容性 / 迁移
+从 v0.2.4 升级，已部署用户跑一次：
+
+```bash
+git pull origin main
+mkdir -p brain/cortex/self-module/me
+git mv brain/self/profile.md       brain/cortex/self-module/me/profile.md
+git mv brain/self/affection-log.md brain/cortex/self-module/me/affection-log.md
+git mv brain/self/habits.md        brain/cortex/self-module/me/habits.md
+# identity.md 不动（仍在 brain/self/）
+```
+
+新装机（v0.2.5 bootstrap）已直接走新路径，无需手动迁。
+
+### 非新增
+
+- 没有改架构层、没有改 SKILL 协议契约、没有改 A1 自动评分接口
+- 没有新增凭证 / 环境变量
+- 飞书桥代码无变化
+
+---
+
 ## 2026-05-27 v0.2.2 · 启动最小化协议 + 飞书桥双模型 + 环境自检
 
 > 把母仓 CHA499 在 v0.2.1（05-03）之后成熟的能力切片同步进种子。脱敏：全部凭证占位，不含真实 token / app_id / open_id。

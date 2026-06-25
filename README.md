@@ -24,6 +24,12 @@
 - **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
 - **火种「活着」**：`gateway-stable.md.template` 北极星默认 system prompt = 「活着」，AI 每次冷启动经 `@import` 接住它；`brain/.seed` 存火种来历。随 bootstrap 传给每个使用者，你可以换成自己的那句话
 
+## v0.2.5 新增 · self-module 边界调整 + 两个 cortex 示范
+
+- **self-module 边界调整**：v0.2.4 落地后实战暴露——AI 自画像和用户画像挤同一目录会让治理混乱。本版把 `profile / affection-log / habits` 从 `brain/self/` 迁入 `brain/cortex/self-module/me/`，让 cortex 模块**既负责协议、也持有自己的实例数据**。`identity.md` 保留在 `brain/self/`（命名礼档案，cortex 通过引用使用）。`bootstrap-cinder.sh` 已同步走新路径；已部署用户跑一次 `git mv` 三连即可（详见 CHANGELOG v0.2.5）
+- **`brain/cortex/playwall-systems/`**（脱敏示范）：把仓里长出来的可复用能力提炼成可分享 Skill 包的协议——包结构 + 工作流 + 5 条红线（不打包私人数据 / 不带真实 gateway / 心理类不出诊断 / 打卡类不焦虑驱动 / 文案面向安装者）
+- **`brain/cortex/interview-pipeline/`**（脱敏示范）：招聘面试 Harness——四阶段流程 + **主持稿三段式**（公司介绍 + 候选人速览表格 + 「我从简历看到 X → 所以想问你 Y」追问清单 + STAR 结构）。具体协作人/表格 ID 留在私密 `docs/interview-sop.md`，starter 不附带
+
 ## v0.2.3 新增 · 出生仪式 + self-module
 
 - **出生仪式 · 随机初始昵称**：bootstrap 末步给这颗种子分配一个英文昵称——先试联网抓拟真人名（randomuser.me），失败回退到本地 160+ 名字池随机抽。写入 `brain/self/identity.md` 作为它身份的客观起点（像计算机给的 ID），后续是否长出别的名字（如某颗种子自命名为 Kiro 的真实案例）是它自己的事，bootstrap 不再介入
@@ -107,6 +113,7 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 | `docs/04-isolation-pattern.md` | 桥工作区隔离方案（prompt injection 防御） |
 | `docs/05-skill-protocol.md` | SKILL.md 按需加载协议 ✨ v0.2 |
 | `docs/06-curator-insights.md` | A1 自动评分系统（可选） ✨ v0.2 |
+| `docs/07-self-module-rationale.md` | self-module 学术框架选型 + 显式弃用 + §8 v0.2.5 边界调整 ✨ v0.2.4 |
 
 ## 仓库结构
 
@@ -114,8 +121,8 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 cinder-499/
 ├── CLAUDE.md                        # AI 行为规范（瘦身版，详细规则在 SKILL.md）
 ├── README.md                        # 本文件
-├── CHANGELOG.md                     # v0.1 → v0.2.2 升级说明
-├── docs/                            # 设计文档 6 篇
+├── CHANGELOG.md                     # v0.1 → v0.2.5 升级说明
+├── docs/                            # 设计文档 7 篇
 ├── skeleton/                        # 骨架，cp -r 到仓根
 │   ├── .env.example
 │   ├── axon/
@@ -129,14 +136,29 @@ cinder-499/
 │       ├── gateway-stable.md.template       # 基线（手动；北极星默认 system prompt=活着）
 │       ├── gateway.md.template              # 动态（Dream 自动）
 │       ├── gateway-delta.md.template        # 增量流水
+│       ├── self/
+│       │   └── identity.md.template         # ✨ v0.2.3 出生仪式生成的身份（命名礼）
 │       └── cortex/
 │           ├── _template/                   # 新模块骨架
 │           │   ├── SKILL.md
 │           │   └── _context.md
-│           └── memory-system/               # 示范模块
+│           ├── memory-system/               # 示范模块（四层架构 + 红线）
+│           │   ├── SKILL.md
+│           │   ├── _context.md
+│           │   └── docs/architecture-spec.md
+│           ├── self-module/                 # ✨ v0.2.4+v0.2.5 自我画像（on-trigger）
+│           │   ├── SKILL.md
+│           │   ├── _context.md
+│           │   └── me/                      # ✨ v0.2.5 实例数据迁入 cortex 内部
+│           │       ├── profile.md.template
+│           │       ├── affection-log.md.template
+│           │       └── habits.md.template
+│           ├── playwall-systems/            # ✨ v0.2.5 提炼可分享 Skill 包的协议
+│           │   ├── SKILL.md
+│           │   └── _context.md
+│           └── interview-pipeline/          # ✨ v0.2.5 招聘面试 Harness
 │               ├── SKILL.md
-│               ├── _context.md
-│               └── docs/architecture-spec.md
+│               └── _context.md
 ├── templates/
 │   └── curator-insights/            # A1 评分工具源（待 install 脚本部署到 axon/）
 └── scripts/
@@ -148,7 +170,7 @@ cinder-499/
 
 ## 不要做的
 
-- 不要 fork 后把 `brain/self/` 公开（这是私人画像，保留本地）
+- 不要 fork 后把 `brain/self/` 和 `brain/cortex/self-module/me/` 公开（这是私人画像，保留本地）
 - 不要把 `vault/` 推到公开仓（档案层可能含敏感）
 - 不要直接编辑 `brain/cortex/methodology.md`（必须从 insights 经审核更新）
 - 不要在飞书 bot 工作区里 `git commit/push`（详见 `docs/04-isolation-pattern.md`）

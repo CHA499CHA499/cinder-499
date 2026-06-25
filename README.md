@@ -103,6 +103,10 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 | Python 3.13+ | 同上，uv 会自动装 |
 | 飞书企业账号 | 飞书 bot 用，不接可不申请 |
 
+## 版本目录
+
+完整版本时间线见 [`RELEASES.md`](RELEASES.md)（按主题分组 + 升级路径 + 每版亮点速览）。详细变更见 [`CHANGELOG.md`](CHANGELOG.md)。
+
 ## 文档地图
 
 | 文档 | 内容 |

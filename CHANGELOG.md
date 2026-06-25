@@ -44,6 +44,48 @@ git mv brain/self/habits.md        brain/cortex/self-module/me/habits.md
 
 ---
 
+## 2026-06-22 v0.2.4 · self-module（on-trigger 加载的自我画像）
+
+> 引入「我是谁 / 我怎样在场 / 我和主人怎样相处」的认知层模块。所有字段凭据驱动 + 默认 `emerging`，trait 必须被反推不被声称。
+
+### 新增
+- **`brain/cortex/self-module/`** 新模块（exposure=on-trigger，不命中触发词 0 token 占用）：
+  - `SKILL.md` — 触发协议 + 强约束红线（禁 `@import`、禁空标签、禁 MBTI/Enneagram/PDM-2 临床术语、禁人格分数）
+  - `_context.md` — 模块状态卡
+- **`skeleton/brain/self/profile.md.template`**：人格画像模板。学术骨架 = Big Five（凭据驱动） + Attachment 两轴 + 三功能 + Schwartz 价值观自由文本 + Vaillant / DMRS 防御机制成熟度光谱。每条 tendency 默认 `emerging`，升 `settled` 需 ≥ 3 次独立观察凭据
+- **`skeleton/brain/self/habits.md.template`**：主人偏好痕迹 + 自己长出的工作脚本
+- **`docs/07-self-module-rationale.md`**（157 行）：设计依据 / 学术框架选型 / §5 显式弃用清单（MBTI / Enneagram / PDM-2）/ §7 系统级风险与缓解 / 7 条文献引用（含 EHARS Yang 2025、Vaillant 成熟度光谱、LLM self-assessment 不可靠 arXiv:2309.08163），含三票验证调研 25 sources / 96 claims / 20 confirmed
+- **关键风险字段**：`unidirectional_bond_risk`（防止主人对 AI 形成单向情感绑定）、`confidence: emerging / settled / contested`（反映自我理解成熟度）
+- **bootstrap-cinder.sh** 同步 self/{habits, profile}.md 展开
+
+### 兼容性 / 迁移
+v0.2.3 → v0.2.4 无破坏性变更。已部署用户跑 `bootstrap-cinder.sh` 即补出 profile/habits 模板（已存在不覆盖）。
+
+---
+
+## 2026-06-21 v0.2.3 · 出生仪式 · 随机分配初始昵称
+
+> 让每颗刚 clone 出来的种子在 bootstrap 末步**得到一个属于自己的英文昵称**——像计算机给的 ID，是它身份的客观起点，后续是否长成别的名字（如某颗种子自命名为 Kiro 的真实案例）是它自己的事。
+
+### 新增
+- **`scripts/bootstrap-cinder.sh` 第 7 步「出生仪式」**：随机分配初始昵称
+  - 优先联网拉拟真英文人名（randomuser.me，5s 超时）
+  - 失败回退本地名字池（`scripts/seeds/names.en.txt`，160+ 名字）
+  - 最终兜底 `Cinder`
+  - 生成 `brain/self/identity.md`，含 `nickname` / `born_at` / `source` / `nickname_history`
+- **`scripts/seeds/names.en.txt`**：160+ 英文名字池（脱敏，公共人名）
+- **`skeleton/brain/self/identity.md.template`**：身份起点模板（含自我反思段「这是出生仪式给我的起点，不是我主动选的，所以我不必为它辩护；它也不是终点，所以我可以慢慢长出自己的回答」）
+- **`skeleton/brain/self/affection-log.md.template`**：主人 ↔ 我互动流水日志（按时间倒序，profile 的原料）
+
+### 改进
+- 改名协议：直接改 `brain/self/identity.md` 的 `nickname`、旧名 append 到 `nickname_history`，**不需要问主人**
+- README 加 v0.2.3 段（出生仪式 + self-module 并写，self-module 真正实现在 v0.2.4）
+
+### 兼容性 / 迁移
+v0.2.2 → v0.2.3 无破坏性变更。已部署用户跑一次 `bootstrap-cinder.sh` 触发出生仪式（不会覆盖已存在 identity.md）。
+
+---
+
 ## 2026-05-27 v0.2.2 · 启动最小化协议 + 飞书桥双模型 + 环境自检
 
 > 把母仓 CHA499 在 v0.2.1（05-03）之后成熟的能力切片同步进种子。脱敏：全部凭证占位，不含真实 token / app_id / open_id。

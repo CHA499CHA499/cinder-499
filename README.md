@@ -24,11 +24,17 @@
 - **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
 - **火种「活着」**：`gateway-stable.md.template` 北极星默认 system prompt = 「活着」，AI 每次冷启动经 `@import` 接住它；`brain/.seed` 存火种来历。随 bootstrap 传给每个使用者，你可以换成自己的那句话
 
+## v0.2.6 新增 · recruiting-harness 完整可分发包
+
+- **`brain/cortex/interview-pipeline/` 完整升级**：从简略示范升级为可直接复制使用的招聘 Harness Skill。核心是 **飞书多维表格主控台**：简历、评分、状态、会议链接、面试稿、录音转写、复盘、测试题进度都回到同一条候选人记录。
+- **新增 4 份脱敏文档**：产品化流程规范、项目配置模板、飞书面试文档模板、真实流程审计清单。新用户可先填项目配置，再按多维表格字段和视图跑流程。
+- **轻量巡检机制**：默认每天 16:00 自动巡检一次多维表格；其他时间由用户手动刷新简历、候选人回复、会议产物或测试题状态，避免高频轮询。
+
 ## v0.2.5 新增 · self-module 边界调整 + 两个 cortex 示范
 
 - **self-module 边界调整**：v0.2.4 落地后实战暴露——AI 自画像和用户画像挤同一目录会让治理混乱。本版把 `profile / affection-log / habits` 从 `brain/self/` 迁入 `brain/cortex/self-module/me/`，让 cortex 模块**既负责协议、也持有自己的实例数据**。`identity.md` 保留在 `brain/self/`（命名礼档案，cortex 通过引用使用）。`bootstrap-cinder.sh` 已同步走新路径；已部署用户跑一次 `git mv` 三连即可（详见 CHANGELOG v0.2.5）
 - **`brain/cortex/playwall-systems/`**（脱敏示范）：把仓里长出来的可复用能力提炼成可分享 Skill 包的协议——包结构 + 工作流 + 5 条红线（不打包私人数据 / 不带真实 gateway / 心理类不出诊断 / 打卡类不焦虑驱动 / 文案面向安装者）
-- **`brain/cortex/interview-pipeline/`**（脱敏示范）：招聘面试 Harness——四阶段流程 + **主持稿三段式**（公司介绍 + 候选人速览表格 + 「我从简历看到 X → 所以想问你 Y」追问清单 + STAR 结构）。具体协作人/表格 ID 留在私密 `docs/interview-sop.md`，starter 不附带
+- **`brain/cortex/interview-pipeline/`**（脱敏示范）：招聘面试 Harness——四阶段流程 + **主持稿三段式**（公司介绍 + 候选人速览表格 + 「我从简历看到 X → 所以想问你 Y」追问清单 + STAR 结构）。v0.2.6 起已补齐完整脱敏规范和配置模板，具体账号、表格 ID、候选人资料仍由使用者放在自己的项目私有配置里
 
 ## v0.2.3 新增 · 出生仪式 + self-module
 
@@ -125,7 +131,7 @@ mv brain/gateway-delta.md.template brain/gateway-delta.md
 cinder-499/
 ├── CLAUDE.md                        # AI 行为规范（瘦身版，详细规则在 SKILL.md）
 ├── README.md                        # 本文件
-├── CHANGELOG.md                     # v0.1 → v0.2.5 升级说明
+├── CHANGELOG.md                     # v0.1 → v0.2.6 升级说明
 ├── docs/                            # 设计文档 7 篇
 ├── skeleton/                        # 骨架，cp -r 到仓根
 │   ├── .env.example
@@ -160,9 +166,14 @@ cinder-499/
 │           ├── playwall-systems/            # ✨ v0.2.5 提炼可分享 Skill 包的协议
 │           │   ├── SKILL.md
 │           │   └── _context.md
-│           └── interview-pipeline/          # ✨ v0.2.5 招聘面试 Harness
+│           └── interview-pipeline/          # ✨ v0.2.6 招聘 Harness（飞书多维表格主控台）
 │               ├── SKILL.md
-│               └── _context.md
+│               ├── _context.md
+│               └── docs/
+│                   ├── recruiting-harness-product-spec.md
+│                   ├── recruiting-project-config-template.md
+│                   ├── feishu-interview-doc-template.md
+│                   └── real-flow-audit-checklist.md
 ├── templates/
 │   └── curator-insights/            # A1 评分工具源（待 install 脚本部署到 axon/）
 └── scripts/

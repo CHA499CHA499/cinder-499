@@ -9,6 +9,7 @@
 
 | 版本 | 日期 | 亮点 |
 |---|---|---|
+| [**v0.2.6**](#v026) | 2026-06-29 | recruiting-harness 完整可分发包：飞书多维表格主控台 + 配置模板 + 每日巡检 |
 | [**v0.2.5**](#v025) | 2026-06-25 | self-module 边界调整 + playwall-systems / interview-pipeline 两个 cortex 示范模块 |
 | [**v0.2.4**](#v024) | 2026-06-22 | self-module on-trigger 自我画像（Big Five 凭据驱动 + 依恋两轴 + Schwartz 价值观 + DMRS 应对方式） |
 | [**v0.2.3**](#v023) | 2026-06-21 | 出生仪式：bootstrap 末步随机分配英文昵称（联网 + 本地名字池兜底） |
@@ -47,6 +48,7 @@
 - v0.2.4 — `self-module/`（自我画像 on-trigger）
 - v0.2.5 — `playwall-systems/`（可分享 Skill 包提炼协议）
 - v0.2.5 — `interview-pipeline/`（招聘面试 Harness + 主持稿三段式）
+- v0.2.6 — `interview-pipeline/` 完整可分发包（飞书多维表格主控台 + 配置模板 + 审计清单）
 
 ### 🔒 红线 / 治理
 - v0.1.0 — 四层数据流单向约束
@@ -58,7 +60,7 @@
 
 ## 升级路径
 
-从任何旧版本升到 v0.2.5：
+从任何旧版本升到 v0.2.6：
 
 ```bash
 git pull origin main
@@ -82,6 +84,22 @@ git mv brain/self/habits.md        brain/cortex/self-module/me/habits.md
 ---
 
 ## 锚点
+
+### v0.2.6
+> 2026-06-29 · recruiting-harness 完整可分发包
+
+**新增**
+- `brain/cortex/interview-pipeline/docs/recruiting-harness-product-spec.md`：产品化流程规范，明确飞书多维表格是主控台和单一真相源
+- `brain/cortex/interview-pipeline/docs/recruiting-project-config-template.md`：项目配置模板，覆盖字段、视图、状态、消息模板、巡检配置
+- `brain/cortex/interview-pipeline/docs/feishu-interview-doc-template.md`：面试官飞书文档模板
+- `brain/cortex/interview-pipeline/docs/real-flow-audit-checklist.md`：真实流程审计清单
+
+**改进**
+- 默认每天 16:00 巡检一次多维表格；其他更新由用户手动刷新
+- 候选人外发消息只保留必要通知，不暴露内部轮次、评级、排序、薪资策略和淘汰逻辑
+- 所有流程产物必须回写同一条候选人记录
+
+详见 [CHANGELOG.md#v026](CHANGELOG.md)。
 
 ### v0.2.5
 > 2026-06-25 · self-module 边界调整 + playwall-systems / interview-pipeline

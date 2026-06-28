@@ -5,13 +5,36 @@
 
 ---
 
+## 2026-06-29 v0.2.6 · recruiting-harness 完整可分发包
+
+> 将 v0.2.5 的 `interview-pipeline` 从简略示范升级为完整脱敏 Skill 包。核心形态：以飞书多维表格为招聘主控台，所有候选人信息、状态、会议、面试稿、转写、复盘和测试题进度都回到同一条候选人记录。
+
+### 新增
+- **`skeleton/brain/cortex/interview-pipeline/docs/recruiting-harness-product-spec.md`**：招聘 Harness 产品化规范。包含前置环境体检、飞书多维表格主控台、招聘前/中/后流程、状态机、每日巡检与手动刷新机制。
+- **`skeleton/brain/cortex/interview-pipeline/docs/recruiting-project-config-template.md`**：新项目配置模板。包含招聘平台、飞书多维表格字段、推荐视图、消息模板、首次试运行、巡检与手动刷新配置。
+- **`skeleton/brain/cortex/interview-pipeline/docs/feishu-interview-doc-template.md`**：面试官飞书文档模板。文档只作为候选人表某一行的深度工作页，不发给候选人。
+- **`skeleton/brain/cortex/interview-pipeline/docs/real-flow-audit-checklist.md`**：真实流程审计清单。覆盖候选人外发克制、会议改期同步、录制/转写缺失、飞书文档覆盖风险、二面/测试题状态推进等检查项。
+
+### 改进
+- `interview-pipeline/SKILL.md` 明确：飞书多维表格是主控台和单一真相源；所有产物必须回写同一条候选人记录。
+- 自动化频率收敛：默认只保留每天 16:00 一次多维表格巡检；简历、候选人回复、会议产物、测试题状态默认由用户手动刷新。
+- `skeleton/brain/INDEX.md` 补齐 playwall-systems / interview-pipeline / self-module 的模块索引。
+- README / RELEASES 同步更新 starter 结构和版本说明。
+
+### 非新增
+- 不附带任何真实公司、候选人、open_id、base_id、wiki_id、会议链接、录音、简历或私有 SOP。
+- 不新增凭证 / 环境变量 / axon 工具。
+- 不改变 Cinder 四层架构和 SKILL.md 协议。
+
+---
+
 ## 2026-06-25 v0.2.5 · self-module 边界调整 + 两个 cortex 示范模块
 
 > 把母仓 CHA499 在 v0.2.4（06-22）之后实战沉淀的能力切片同步进种子。脱敏：去掉具名渠道 / 协作人 / 表格 ID，保留方法论。
 
 ### 新增
 - **`brain/cortex/playwall-systems/`**（脱敏示范模块）：把仓里长出来的可复用能力提炼成可装、可分享、可迁移的 Skill 包。包含包结构约定（`SKILL.md` + `assets/templates/` + `references/`）+ 工作协议 + 5 条红线（不打包私人数据 / 不带真实 gateway / 文案面向安装者 / 心理类不出诊断 / 打卡类不用焦虑驱动）
-- **`brain/cortex/interview-pipeline/`**（脱敏示范模块）：招聘面试流程 Harness。四阶段（简历同步 → 评估 → 准备 → 复盘）+ **主持稿三段式**（公司介绍 + 候选人速览表格 + 追问清单）+ 「**我从简历看到 X → 所以想问你 Y**」追问统一格式 + STAR 结构。`docs/interview-sop.md` 因含私密配置（协作人 open_id、表格 ID）不附模板，首次启用按 SKILL.md 框架手起
+- **`brain/cortex/interview-pipeline/`**（脱敏示范模块）：招聘面试流程 Harness。四阶段（简历同步 → 评估 → 准备 → 复盘）+ **主持稿三段式**（公司介绍 + 候选人速览表格 + 追问清单）+ 「**我从简历看到 X → 所以想问你 Y**」追问统一格式 + STAR 结构。v0.2.6 起已补齐完整脱敏规范和配置模板；具体账号、资源标识符和候选人资料仍由使用者放在自己的项目私有配置里
 - **CLAUDE.md / AGENTS.md 触发口令表**补三行示例：self-module / playwall-systems / interview-pipeline，让新手知道如何往触发表追加
 
 ### 改进

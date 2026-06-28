@@ -31,5 +31,8 @@
 
 - [_template](./cortex/_template/SKILL.md) — 模块骨架模板
 - [memory-system](./cortex/memory-system/SKILL.md) — Cinder 记忆系统核心约束 + 文件存放规则 + 指令协议（**exposure=always**）
+- [playwall-systems](./cortex/playwall-systems/SKILL.md) — 可分享 Skill / 玩法包提炼协议（exposure=on-trigger）
+- [interview-pipeline](./cortex/interview-pipeline/SKILL.md) — 以飞书多维表格为主控台的招聘 Harness（exposure=on-trigger）
+- [self-module](./cortex/self-module/SKILL.md) — AI 自我画像与关系痕迹模块（exposure=on-trigger）
 
 （在这里追加你的模块）

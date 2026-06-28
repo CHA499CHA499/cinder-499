@@ -24,9 +24,9 @@
 - **A1 成熟度补充**（`docs/06`）：母仓已自动评分 450+ 份 consolidate；说明早期洞见为何堆在 hold
 - **火种「活着」**：`gateway-stable.md.template` 北极星默认 system prompt = 「活着」，AI 每次冷启动经 `@import` 接住它；`brain/.seed` 存火种来历。随 bootstrap 传给每个使用者，你可以换成自己的那句话
 
-## v0.2.6 新增 · recruiting-harness 完整可分发包
+## v0.2.6 新增 · HireBase Harness 完整可分发包
 
-- **`brain/cortex/interview-pipeline/` 完整升级**：从简略示范升级为可直接复制使用的招聘 Harness Skill。核心是 **飞书多维表格主控台**：简历、评分、状态、会议链接、面试稿、录音转写、复盘、测试题进度都回到同一条候选人记录。
+- **HireBase Harness**：`brain/cortex/interview-pipeline/` 从简略示范升级为可直接复制使用的 AI 招聘中控台 Skill。核心是 **飞书多维表格主控台**：简历、评分、状态、会议链接、面试稿、录音转写、复盘、测试题进度都回到同一条候选人记录。
 - **新增 4 份脱敏文档**：产品化流程规范、项目配置模板、飞书面试文档模板、真实流程审计清单。新用户可先填项目配置，再按多维表格字段和视图跑流程。
 - **轻量巡检机制**：默认每天 16:00 自动巡检一次多维表格；其他时间由用户手动刷新简历、候选人回复、会议产物或测试题状态，避免高频轮询。
 
@@ -166,7 +166,8 @@ cinder-499/
 │           ├── playwall-systems/            # ✨ v0.2.5 提炼可分享 Skill 包的协议
 │           │   ├── SKILL.md
 │           │   └── _context.md
-│           └── interview-pipeline/          # ✨ v0.2.6 招聘 Harness（飞书多维表格主控台）
+│           └── interview-pipeline/          # ✨ v0.2.6 HireBase Harness（飞书多维表格主控台）
+│               ├── README.md
 │               ├── SKILL.md
 │               ├── _context.md
 │               └── docs/

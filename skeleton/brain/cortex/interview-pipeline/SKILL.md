@@ -1,7 +1,9 @@
 ---
 name: interview-pipeline
-description: 通用招聘流程 Harness——以飞书多维表格为主控台，完成前置环境体检、简历入表、候选人评分、约面、面试稿、转写复盘和多轮状态流转
+description: HireBase Harness——以飞书多维表格为主控台的 AI 招聘中控台，覆盖简历入表、候选人评分、约面、面试稿、转写复盘和多轮状态流转
 triggers:
+- HireBase
+- HireBase Harness
 - 招聘
 - 招聘 Harness
 - 面试
@@ -31,7 +33,7 @@ permalink: cinder/cortex/interview-pipeline/skill
 
 ## 模块简介
 
-通用招聘面试流程 Harness。任何招聘/面试相关请求都走这条线：先完成本机环境与三类 CLI 体检，再按项目配置连接招聘平台、飞书多维表格/文档、会议系统，最后围绕飞书多维表格里的候选人记录完成简历监听、入表评分、面试预约、面试稿、录制转写、复盘和多轮状态推进。真实运行时默认每天 16:00 自动巡检一次多维表格，其他更新由用户手动触发。
+HireBase Harness 是一个以飞书多维表格为主控台的 AI 招聘中控台。任何招聘/面试相关请求都走这条线：先完成本机环境与三类 CLI 体检，再按项目配置连接招聘平台、飞书多维表格/文档、会议系统，最后围绕飞书多维表格里的候选人记录完成简历监听、入表评分、面试预约、面试稿、录制转写、复盘和多轮状态推进。真实运行时默认每天 16:00 自动巡检一次多维表格，其他更新由用户手动触发。
 
 产品化流程见 [`docs/recruiting-harness-product-spec.md`](docs/recruiting-harness-product-spec.md)，新项目配置模板见 [`docs/recruiting-project-config-template.md`](docs/recruiting-project-config-template.md)，面试官飞书文档格式见 [`docs/feishu-interview-doc-template.md`](docs/feishu-interview-doc-template.md)，真实流程审计清单见 [`docs/real-flow-audit-checklist.md`](docs/real-flow-audit-checklist.md)。本文件必须保持可抽取、可复用，不写入任何具体公司、个人、平台账号、资源标识符或候选人信息。
 

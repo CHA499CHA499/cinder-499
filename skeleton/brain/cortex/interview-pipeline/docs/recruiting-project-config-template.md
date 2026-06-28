@@ -1,10 +1,10 @@
 ---
-title: recruiting-project-config-template
+title: hirebase-project-config-template
 type: note
 permalink: cinder/cortex/interview-pipeline/docs/recruiting-project-config-template
 ---
 
-# 招聘 Harness 项目配置模板
+# HireBase Harness 项目配置模板
 
 > 复制本模板，为每个招聘项目单独填写。不要把 token、cookie、密钥、个人账号凭证写进本文档；只记录资源名称、用途和是否已配置。
 

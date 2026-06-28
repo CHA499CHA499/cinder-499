@@ -5,12 +5,13 @@
 
 ---
 
-## 2026-06-29 v0.2.6 · recruiting-harness 完整可分发包
+## 2026-06-29 v0.2.6 · HireBase Harness 完整可分发包
 
-> 将 v0.2.5 的 `interview-pipeline` 从简略示范升级为完整脱敏 Skill 包。核心形态：以飞书多维表格为招聘主控台，所有候选人信息、状态、会议、面试稿、转写、复盘和测试题进度都回到同一条候选人记录。
+> 将 v0.2.5 的 `interview-pipeline` 从简略示范升级为完整脱敏 Skill 包，并命名为 **HireBase Harness**。核心形态：以飞书多维表格为招聘主控台，所有候选人信息、状态、会议、面试稿、转写、复盘和测试题进度都回到同一条候选人记录。
 
 ### 新增
-- **`skeleton/brain/cortex/interview-pipeline/docs/recruiting-harness-product-spec.md`**：招聘 Harness 产品化规范。包含前置环境体检、飞书多维表格主控台、招聘前/中/后流程、状态机、每日巡检与手动刷新机制。
+- **`skeleton/brain/cortex/interview-pipeline/README.md`**：对外入口页，说明 HireBase Harness 是什么、适合谁、如何快速开始。
+- **`skeleton/brain/cortex/interview-pipeline/docs/recruiting-harness-product-spec.md`**：HireBase Harness 产品化规范。包含前置环境体检、飞书多维表格主控台、招聘前/中/后流程、状态机、每日巡检与手动刷新机制。
 - **`skeleton/brain/cortex/interview-pipeline/docs/recruiting-project-config-template.md`**：新项目配置模板。包含招聘平台、飞书多维表格字段、推荐视图、消息模板、首次试运行、巡检与手动刷新配置。
 - **`skeleton/brain/cortex/interview-pipeline/docs/feishu-interview-doc-template.md`**：面试官飞书文档模板。文档只作为候选人表某一行的深度工作页，不发给候选人。
 - **`skeleton/brain/cortex/interview-pipeline/docs/real-flow-audit-checklist.md`**：真实流程审计清单。覆盖候选人外发克制、会议改期同步、录制/转写缺失、飞书文档覆盖风险、二面/测试题状态推进等检查项。

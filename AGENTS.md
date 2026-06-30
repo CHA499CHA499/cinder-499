@@ -74,7 +74,7 @@
 | 记忆 / 架构 / Dream / brain/ / gateway / 更新记忆 / 提炼记忆 / 收工 / 再见 | `brain/cortex/memory-system/SKILL.md`（**默认 always 加载**）|
 | 我是谁 / 你叫什么 / 改名 / 性格 / 自我反思 / 你的经历 | `brain/cortex/self-module/SKILL.md` |
 | 提炼成 Skill / 玩法包 / 系统包 / 上架 / 分享给别人用 | `brain/cortex/playwall-systems/SKILL.md` |
-| 面试 / 简历 / 候选人 / 筛简历 / 面试准备 / 沟通复盘 / 约面 | `brain/cortex/interview-pipeline/SKILL.md` |
+| 招聘 / 招聘 Harness / 面试 / 简历 / 候选人 / 筛简历 / 面试准备 / 沟通复盘 / 约面 / 测试题 / 二面 | `brain/cortex/interview-pipeline/SKILL.md` |
 | （在这里追加你的模块和触发词）| |
 
 详细机制：`docs/05-skill-protocol.md`。

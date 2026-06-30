@@ -31,5 +31,6 @@
 
 - [_template](./cortex/_template/SKILL.md) — 模块骨架模板
 - [memory-system](./cortex/memory-system/SKILL.md) — Cinder 记忆系统核心约束 + 文件存放规则 + 指令协议（**exposure=always**）
+- [interview-pipeline](./cortex/interview-pipeline/SKILL.md) — 招聘 Harness / HireBase：以多维表格为主控台的简历入表、候选人评分、约面、面试稿、转写复盘、多轮状态流转（**exposure=on-trigger**）
 
 （在这里追加你的模块）

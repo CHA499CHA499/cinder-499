@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-06-30 v0.2.7 · HireBase / 招聘 Harness 通用版
+
+> 把母仓招聘流程进一步产品化为可复用 starter 模块。模块保留流程、模板、字段、状态机和审计清单；候选人材料、录音、转写、会议链接、表格 ID、open_id、token 和私有 SOP 留在使用者自己的项目配置或数据目录。
+
+### 新增
+- **`skeleton/brain/cortex/interview-pipeline/README.md`**：作为模块入口页，说明使用顺序和边界。
+- **`docs/recruiting-harness-product-spec.md`**：招聘 Harness 产品化规范，以飞书多维表格为主控台，覆盖环境体检、项目初始化、简历入表、候选人评分、约面、面试稿、转写复盘、测试题和二面流转。
+- **`docs/recruiting-project-config-template.md`**：新项目空白配置模板，要求使用者在私有配置里填写平台、候选人表、会议、消息模板和首次试运行结果。
+- **`docs/feishu-interview-doc-template.md`**：面试官内部飞书文档模板，固化开场、候选人速览、简历追问、红旗前置、测试题承接、反问和结束语。
+- **`docs/real-flow-audit-checklist.md`**：真实流程审计清单，覆盖候选人外发、会议改期、录制/转写、在线文档修改、复盘回填和二面决策边界。
+
+### 改进
+- `interview-pipeline/SKILL.md` 从 v0.2.5 的四阶段示范升级为通用招聘 Harness：先做 Node/Python/招聘平台 CLI/飞书 CLI/会议 CLI/登录态/字段/录制转写权限体检，再进入招聘前 / 招聘中 / 招聘后流程。
+- `AGENTS.md` / `CLAUDE.md` 触发词补充「招聘 / 招聘 Harness / 测试题 / 二面」。
+- `brain/INDEX.md` 增加 `interview-pipeline` 模块索引。
+- `_context.md` 改为通用 starter 语境，删除对私有 `docs/interview-sop.md`、录音目录和备份目录的依赖说明。
+
+### 兼容性 / 迁移
+- 已使用 v0.2.5 `interview-pipeline` 的项目可保留自己的私有 SOP 和数据目录；新版本不再把这些私有文件写成模块必需依赖。
+- 新用户从 `docs/recruiting-project-config-template.md` 复制私有配置，再按 SKILL 触发后的环境体检启动。
+
+### 非新增
+- 没有新增凭证或环境变量。
+- 没有新增 axon 工具或自动化脚本。
+- 没有改变 Cinder 四层架构或 SKILL.md 协议。
+
+---
+
 ## 2026-06-25 v0.2.5 · self-module 边界调整 + 两个 cortex 示范模块
 
 > 把母仓 CHA499 在 v0.2.4（06-22）之后实战沉淀的能力切片同步进种子。脱敏：去掉具名渠道 / 协作人 / 表格 ID，保留方法论。
